@@ -1,14 +1,15 @@
 package com.example.todolist;
 
+import android.os.Bundle;
+import android.view.Gravity;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 import java.util.ArrayList;
 
@@ -35,10 +36,20 @@ public class MainActivity extends AppCompatActivity {
         setToDos();
 
         submitButton.setOnClickListener(view -> {
-            // adding user input to-do to array list
-            toDoList.add(new ToDo(inputToDo.getText().toString()));
-            // need to call this so UI updates and newly added item is displayed
-            recyclerAdapter.notifyItemInserted(recyclerAdapter.getItemCount());
+            if (!isEmpty(inputToDo)) {
+                // adding user input to-do to array list
+                toDoList.add(new ToDo(inputToDo.getText().toString()));
+                // need to call this so UI updates and newly added item is displayed
+                recyclerAdapter.notifyItemInserted(recyclerAdapter.getItemCount());
+                // clearing user input after to-do is submitted
+                inputToDo.getText().clear();
+            } else {
+                // toast message if user tries to submit empty String
+                Toast toast = Toast.makeText(getApplicationContext(), "Please enter a to-do", Toast.LENGTH_LONG);
+                // TODO: this does not work. Figure out how to make toast appear at the top of the screen
+                toast.setGravity(Gravity.CENTER_VERTICAL,0,0);
+                toast.show();
+            }
         });
     }
 
@@ -55,5 +66,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(recyclerAdapter);
+    }
+
+    private boolean isEmpty(EditText editText) {
+        return editText.getText().toString().trim().length() == 0;
     }
 }
