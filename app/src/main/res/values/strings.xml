@@ -2,4 +2,5 @@
     <string name="app_name">To Do List</string>
     <string name="input_hint">Enter a to-do</string>
     <string name="submit">Submit</string>
+    <string name="three_menu_dots">Three menu dots</string>
 </resources>
