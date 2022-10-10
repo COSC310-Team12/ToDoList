@@ -2,8 +2,11 @@ package com.example.todolist;
 
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,21 +39,34 @@ public class MainActivity extends AppCompatActivity {
         setToDos();
 
         submitButton.setOnClickListener(view -> {
-            if (!isEmpty(inputToDo)) {
-                // adding user input to-do to array list
-                toDoList.add(new ToDo(inputToDo.getText().toString()));
-                // need to call this so UI updates and newly added item is displayed
-                recyclerAdapter.notifyItemInserted(recyclerAdapter.getItemCount());
-                // clearing user input after to-do is submitted
-                inputToDo.getText().clear();
-            } else {
-                // toast message if user tries to submit empty String
-                Toast toast = Toast.makeText(getApplicationContext(), "Please enter a to-do", Toast.LENGTH_LONG);
-                // TODO: this does not work. Figure out how to make toast appear at the top of the screen
-                toast.setGravity(Gravity.CENTER_VERTICAL,0,0);
-                toast.show();
+            createTask(view);
+        });
+        EditText taskEntryBox = findViewById(R.id.inputToDo);
+        taskEntryBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (keyEvent.getAction() == 0 && taskEntryBox.getText().toString().length() > 0)
+                    createTask(textView);
+                return true;
             }
         });
+    }
+
+    public void createTask(View v) {
+        if (!isEmpty(inputToDo)) {
+            // adding user input to-do to array list
+            toDoList.add(new ToDo(inputToDo.getText().toString()));
+            // need to call this so UI updates and newly added item is displayed
+            recyclerAdapter.notifyItemInserted(recyclerAdapter.getItemCount());
+            // clearing user input after to-do is submitted
+            inputToDo.getText().clear();
+        } else {
+            // toast message if user tries to submit empty String
+            Toast toast = Toast.makeText(getApplicationContext(), "Please enter a to-do", Toast.LENGTH_LONG);
+            // TODO: this does not work. Figure out how to make toast appear at the top of the screen
+            toast.setGravity(Gravity.CENTER_VERTICAL,0,0);
+            toast.show();
+        }
     }
 
     private void setToDos() {

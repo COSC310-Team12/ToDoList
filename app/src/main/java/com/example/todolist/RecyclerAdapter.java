@@ -41,7 +41,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         private final TextView toDoText;
         public MyViewHolder(final View view) {
             super(view);
-            toDoText = view.findViewById(R.id.toDoText);
+            toDoText = view.findViewById(R.id.checkBox);
         }
     }
 }
