@@ -1,5 +1,6 @@
 package com.example.todolist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -86,5 +87,10 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isEmpty(EditText editText) {
         return editText.getText().toString().trim().length() == 0;
+    }
+
+    public void editTask(View v) {
+//        Intent intent = new Intent(this, EditTask.class);
+        System.out.println(v.getParent());
     }
 }
