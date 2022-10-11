@@ -1,13 +1,10 @@
 package com.example.todolist;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,17 +36,11 @@ public class MainActivity extends AppCompatActivity {
         setAdapter();
         setToDos();
 
-        submitButton.setOnClickListener(view -> {
-            createTask(view);
-        });
-        EditText taskEntryBox = findViewById(R.id.inputToDo);
-        taskEntryBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (keyEvent.getAction() == 0 && taskEntryBox.getText().toString().length() > 0)
-                    createTask(textView);
-                return true;
-            }
+        submitButton.setOnClickListener(this::createTask);
+        inputToDo.setOnEditorActionListener((textView, i, keyEvent) -> {
+            if (keyEvent.getAction() == 0 && inputToDo.getText().toString().length() > 0)
+                createTask(textView);
+            return true;
         });
     }
 
@@ -87,10 +78,5 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isEmpty(EditText editText) {
         return editText.getText().toString().trim().length() == 0;
-    }
-
-    public void editTask(View v) {
-//        Intent intent = new Intent(this, EditTask.class);
-        System.out.println(v.getParent());
     }
 }
