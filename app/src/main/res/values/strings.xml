@@ -6,4 +6,8 @@
     <string name="checkbox">CheckBox</string>
     <string name="todo">TODO</string>
     <string name="button_to_edit_to_do">Button to edit to-do</string>
+    <string name="edit_to_do">Edit to-do:</string>
+    <string name="edit_due_date">Edit due date:</string>
+    <string name="add_notes">Add notes:</string>
+    <string name="notes_hint">Add additional information to your to-do here</string>
 </resources>
