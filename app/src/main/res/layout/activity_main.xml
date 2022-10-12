@@ -10,6 +10,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
@@ -18,13 +20,13 @@
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="20dp"
+        android:autofillHints=""
         android:ems="10"
         android:hint="@string/input_hint"
         android:inputType="textPersonName"
         android:textColorHint="#757575"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:autofillHints="" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/submitButton"
