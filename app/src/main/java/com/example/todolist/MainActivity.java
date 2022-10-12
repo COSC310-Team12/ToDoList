@@ -3,6 +3,8 @@ package com.example.todolist;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.Gravity;
@@ -69,11 +71,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             // clearing user input after to-do is submitted
             inputToDo.getText().clear();
         } else {
-            System.out.println("Empty task name");
-            // toast message if user tries to submit empty String
-            Toast toast = Toast.makeText(getApplicationContext(), "Please enter a to-do", Toast.LENGTH_LONG);
-            // TODO: this does not work. Figure out how to make toast appear at the top of the screen
-            toast.show();
+            // Ask the user to enter a name for the task
+            Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name",Snackbar.LENGTH_LONG).show();
         }
     }
 
