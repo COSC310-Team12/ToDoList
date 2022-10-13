@@ -6,11 +6,56 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/myCoordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="70dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Here are the existing layout elements, now wrapped in
+             a CoordinatorLayout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- …Toolbar, other layouts, other elements… -->
+
+        </LinearLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/inputToDo"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/input_hint"
+        android:inputType="textPersonName"
+        android:textColorHint="#757575"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Button
-        android:id="@+id/button"
+        android:id="@+id/submitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Wow such button"
-        tools:layout_editor_absoluteX="150dp"
-        tools:layout_editor_absoluteY="266dp" />
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="@string/submit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
