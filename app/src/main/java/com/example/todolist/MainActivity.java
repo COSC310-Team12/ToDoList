@@ -39,8 +39,12 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         setContentView(R.layout.activity_main);
 
         // Init the toDoList to a blank one if none is returned from the previous activity (i.e. EditToDo)
-        if (getIntent().hasExtra("ToDoList"))
-            toDoList = (ArrayList<ToDo>) getIntent().getSerializableExtra("ToDoList");
+        Intent intent = getIntent();
+        if (intent.hasExtra("ToDoList"))
+            toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
+        if (savedInstanceState != null) {
+            toDoList = (ArrayList<ToDo>) savedInstanceState.getSerializable("ToDoList");
+        }
         else {
             toDoList = new ArrayList<>();
             setToDos();
@@ -62,6 +66,20 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        // call the superclass method first
+        super.onDestroy();
+
+
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("ToDoList", toDoList);
+
+        super.onSaveInstanceState(outState);
+    }
+
     public void createToDo(View v) {
         if (!isEmpty(inputToDo)) {
             // adding user input to-do to array list
@@ -72,7 +90,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             inputToDo.getText().clear();
         } else {
             // Ask the user to enter a name for the task
-            Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name",Snackbar.LENGTH_LONG).show();
+            Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name",Snackbar.LENGTH_LONG);
+            sb.show();
         }
     }
 
@@ -99,9 +118,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     @Override
     public void onClick(View view, int position) {
         final ToDo toDo = toDoList.get(position);
-        System.out.println("\n");
-        System.out.println(toDo.getText());
-        System.out.println("\n");
         Intent i = new Intent(this, EditToDo.class);
         // Send To Do object so that we can edit it there
         i.putExtra("ToDoList", toDoList);
