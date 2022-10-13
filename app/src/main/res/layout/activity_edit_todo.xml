@@ -72,9 +72,18 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/deleteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="deleteButton"
+                android:text="Delete" />
+
+            <Button
                 android:id="@+id/cancelEditButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
                 android:onClick="goBack"
                 android:text="Cancel" />
 
@@ -82,7 +91,6 @@
                 android:id="@+id/submitEditButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
                 android:onClick="submit"
                 android:text="Submit" />
         </LinearLayout>

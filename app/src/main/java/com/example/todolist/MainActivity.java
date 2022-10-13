@@ -23,6 +23,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -33,21 +40,52 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private ToDoAdapter recyclerAdapter;
     private EditText inputToDo;
 
+    // FOR DEBUGGING ONLY
+    final private boolean LOAD_FROM_FILE = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Init the toDoList to a blank one if none is returned from the previous activity (i.e. EditToDo)
         Intent intent = getIntent();
-        if (intent.hasExtra("ToDoList"))
+
+        if (intent.hasExtra("ToDoList")) {
+            // Init the toDoList to a blank one if none is returned from the previous activity (i.e. EditToDo)
             toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
-        if (savedInstanceState != null) {
-            toDoList = (ArrayList<ToDo>) savedInstanceState.getSerializable("ToDoList");
-        }
-        else {
+            // Save changes after editing
+            save();
+        } else try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(getFilesDir(), "savedToDos.dat")))){
+            // Used for debugging
+            if (!LOAD_FROM_FILE) throw new FileNotFoundException("Not loading from file for debug purposes. To change this behavior, change LOAD_FROM_FILE to true");
+            // Try loading from saved file
+            toDoList = (ArrayList<ToDo>) in.readObject();
+        } catch (FileNotFoundException e) {
+            // Load default tasks
             toDoList = new ArrayList<>();
             setToDos();
+            // Save new state
+            save();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (intent.hasExtra("Notification")) {
+            int noti = intent.getIntExtra("Notification", -1);
+            System.out.println("Noti: " + noti);
+            switch (noti) {
+                case 0: Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Task deleted",Snackbar.LENGTH_LONG);
+                sb.setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Undo delete
+                        toDoList.add((ToDo) intent.getSerializableExtra("deletedToDo"));
+                        recyclerAdapter.notifyItemInserted(recyclerAdapter.getItemCount());
+                        System.out.println("Undid delete");
+                    }
+                });
+                sb.show(); break;
+            }
         }
 
         recyclerView = findViewById(R.id.recyclerView);
@@ -66,18 +104,15 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        // call the superclass method first
-        super.onDestroy();
-
-
-    }
-
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable("ToDoList", toDoList);
-
-        super.onSaveInstanceState(outState);
+    private void save() {
+        // Save toDoList array
+        File file = new File(getFilesDir(), "savedToDos.dat");
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+            out.writeObject(toDoList);
+            System.out.println("SAVED");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void createToDo(View v) {
@@ -88,10 +123,11 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             recyclerAdapter.notifyItemInserted(recyclerAdapter.getItemCount());
             // clearing user input after to-do is submitted
             inputToDo.getText().clear();
+            // Save changes
+            save();
         } else {
             // Ask the user to enter a name for the task
-            Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name",Snackbar.LENGTH_LONG);
-            sb.show();
+            Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name",Snackbar.LENGTH_LONG).show();
         }
     }
 
