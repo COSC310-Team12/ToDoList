@@ -72,27 +72,32 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/deleteButton"
+                android:id="@+id/cancelEditButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="deleteButton"
-                android:text="Delete" />
+                android:onClick="goBack"
+                android:text="Cancel"
+                android:textColor="@android:color/darker_gray"
+                style="?android:attr/buttonBarButtonStyle" />
 
             <Button
-                android:id="@+id/cancelEditButton"
+                android:id="@+id/deleteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
-                android:onClick="goBack"
-                android:text="Cancel" />
+                android:onClick="deleteButton"
+                android:text="Delete"
+                android:textColor="@android:color/holo_red_dark"
+                style="?android:attr/buttonBarButtonStyle" />
 
             <Button
                 android:id="@+id/submitEditButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="submit"
-                android:text="Submit" />
+                android:text="Submit"
+                style="?android:attr/buttonBarButtonStyle" />
         </LinearLayout>
 
     </LinearLayout>
