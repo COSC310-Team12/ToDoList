@@ -1,22 +1,12 @@
 package com.example.todolist;
 
-import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.text.format.DateFormat;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TimePicker;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.Guideline;
-import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,7 +21,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements ToDoClickListener {
 
@@ -39,9 +28,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private RecyclerView recyclerView;
     private ToDoAdapter recyclerAdapter;
     private EditText inputToDo;
-
-    // FOR DEBUGGING ONLY
-    final private boolean LOAD_FROM_FILE = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +38,16 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
         if (intent.hasExtra("ToDoList")) {
             // Init the toDoList to a blank one if none is returned from the previous activity (i.e. EditToDo)
+            //noinspection unchecked
             toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
             // Save changes after editing
             save();
         } else try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(getFilesDir(), "savedToDos.dat")))){
-            // Used for debugging
+            // FOR DEBUGGING ONLY
+            boolean LOAD_FROM_FILE = true;
             if (!LOAD_FROM_FILE) throw new FileNotFoundException("Not loading from file for debug purposes. To change this behavior, change LOAD_FROM_FILE to true");
             // Try loading from saved file
+            //noinspection unchecked
             toDoList = (ArrayList<ToDo>) in.readObject();
         } catch (FileNotFoundException e) {
             // Load default tasks
@@ -70,19 +59,15 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             e.printStackTrace();
         }
 
+        // Handle any notifications requested by previous activity
         if (intent.hasExtra("Notification")) {
-            int noti = intent.getIntExtra("Notification", -1);
-            System.out.println("Noti: " + noti);
-            switch (noti) {
+            int notification = intent.getIntExtra("Notification", -1);
+            switch (notification) {
                 case 0: Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Task deleted",Snackbar.LENGTH_LONG);
-                sb.setAction("UNDO", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // Undo delete
-                        toDoList.add((ToDo) intent.getSerializableExtra("deletedToDo"));
-                        recyclerAdapter.notifyItemInserted(recyclerAdapter.getItemCount());
-                        System.out.println("Undid delete");
-                    }
+                sb.setAction("UNDO", view -> {
+                    // Undo delete
+                    toDoList.add((ToDo) intent.getSerializableExtra("deletedToDo"));
+                    recyclerAdapter.notifyItemInserted(recyclerAdapter.getItemCount());
                 });
                 sb.show(); break;
             }
@@ -109,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         File file = new File(getFilesDir(), "savedToDos.dat");
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
             out.writeObject(toDoList);
-            System.out.println("SAVED");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -153,9 +137,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     @Override
     public void onClick(View view, int position) {
-        final ToDo toDo = toDoList.get(position);
         Intent i = new Intent(this, EditToDo.class);
-        // Send To Do object so that we can edit it there
+        // Send toDoList so that we can edit it there, then reload it when returning to main activity
         i.putExtra("ToDoList", toDoList);
         i.putExtra("Index", position);
         startActivity(i);
