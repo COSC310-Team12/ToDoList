@@ -15,6 +15,10 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
+/*
+This class controls the main screen. It extends our custom ToDoClickListener.
+*/
+
 public class MainActivity extends AppCompatActivity implements ToDoClickListener {
 
     private ArrayList<ToDo> toDoList;
@@ -22,12 +26,13 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private ToDoAdapter recyclerAdapter;
     private EditText inputToDo;
 
+    // initialization code
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Init the toDoList to a blank one if none is returned from the previous activity (i.e. EditToDo)
+        // initialize the toDoList to a blank one if none is returned from the previous activity (i.e. EditToDo)
         Intent intent = getIntent();
         if (intent.hasExtra("ToDoList"))
             toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
@@ -64,7 +69,9 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         super.onSaveInstanceState(outState);
     }
 
+    // create new to-do from user input
     public void createToDo(View v) {
+        // only allow user to add to-do if they entered text
         if (!isEmpty(inputToDo)) {
             // adding user input to-do to array list
             toDoList.add(new ToDo(inputToDo.getText().toString()));
@@ -73,14 +80,14 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             // clearing user input after to-do is submitted
             inputToDo.getText().clear();
         } else {
-            // Ask the user to enter a name for the task
+            // ask the user to enter a name for the task
             Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name", Snackbar.LENGTH_LONG);
             sb.show();
         }
     }
 
+    // setting custom ToDoAdapter on RecyclerView in this activity (boiler-plate code)
     private void setAdapter() {
-        // boiler-plate code
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -94,11 +101,12 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         return editText.getText().toString().trim().length() == 0;
     }
 
+    // bound to the RecyclerView elements (individual to-dos)
     @Override
     public void onClick(View view, int position) {
         final ToDo toDo = toDoList.get(position);
         Intent i = new Intent(this, EditToDo.class);
-        // Send to-do object so that we can edit it there
+        // Send to-do object to EditToDo class so that we can edit it there
         i.putExtra("ToDoList", toDoList);
         i.putExtra("Index", position);
         startActivity(i);
