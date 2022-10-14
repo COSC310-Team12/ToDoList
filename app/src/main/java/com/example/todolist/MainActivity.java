@@ -1,22 +1,12 @@
 package com.example.todolist;
 
-import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.text.format.DateFormat;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TimePicker;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.Guideline;
-import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements ToDoClickListener {
 
@@ -44,10 +33,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
         if (savedInstanceState != null) {
             toDoList = (ArrayList<ToDo>) savedInstanceState.getSerializable("ToDoList");
-        }
-        else {
+        } else {
             toDoList = new ArrayList<>();
-            setToDos();
         }
 
         recyclerView = findViewById(R.id.recyclerView);
@@ -70,13 +57,10 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     protected void onDestroy() {
         // call the superclass method first
         super.onDestroy();
-
-
     }
 
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("ToDoList", toDoList);
-
         super.onSaveInstanceState(outState);
     }
 
@@ -90,15 +74,9 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             inputToDo.getText().clear();
         } else {
             // Ask the user to enter a name for the task
-            Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name",Snackbar.LENGTH_LONG);
+            Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name", Snackbar.LENGTH_LONG);
             sb.show();
         }
-    }
-
-    private void setToDos() {
-        // may implement with database later on
-        toDoList.add(new ToDo("Finish prototype"));
-        toDoList.add(new ToDo("Improve design"));
     }
 
     private void setAdapter() {
@@ -111,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         recyclerAdapter.setClickListener(this);
     }
 
+    // utility method
     private boolean isEmpty(EditText editText) {
         return editText.getText().toString().trim().length() == 0;
     }
@@ -119,10 +98,9 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     public void onClick(View view, int position) {
         final ToDo toDo = toDoList.get(position);
         Intent i = new Intent(this, EditToDo.class);
-        // Send To Do object so that we can edit it there
+        // Send to-do object so that we can edit it there
         i.putExtra("ToDoList", toDoList);
         i.putExtra("Index", position);
         startActivity(i);
     }
-
 }
