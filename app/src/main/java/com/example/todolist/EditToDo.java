@@ -47,7 +47,13 @@ public class EditToDo extends AppCompatActivity {
         toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
         toDo = toDoList.get(index);
 
-        ((TextView)findViewById(R.id.editTaskTextView)).setText("Edit \"" + toDo.getText() + "\"");
+        String activityTitle = toDo.getText();
+        if (activityTitle.length() > 25) {
+            activityTitle = activityTitle.substring(0,25);
+            activityTitle += "...";
+        }
+
+        ((TextView)findViewById(R.id.editTaskTextView)).setText("Edit \"" + activityTitle + "\"");
 
         name = findViewById(R.id.editTaskName);
         date = findViewById(R.id.editTaskDueDate);
@@ -124,7 +130,7 @@ public class EditToDo extends AppCompatActivity {
 
         // Make pressing enter in the final text box submit the changes
         date.setOnEditorActionListener((textView, i, keyEvent) -> {
-            if (keyEvent.getAction() == 0)
+            if (i == 6 || keyEvent.getAction() == 0)
                 submit(textView);
             return true;
         });
