@@ -11,7 +11,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -22,10 +24,12 @@ import java.util.Date;
 
 public class EditToDo extends AppCompatActivity {
     TextInputEditText name, date;
-    TextInputLayout dueDateBox;
+    TextInputLayout dueDateBox, nameBox;
     ToDo toDo;
     ArrayList<ToDo> toDoList;
     Date newDate;
+    CoordinatorLayout coordinatorLayout;
+    boolean validDate = true;
 
     @SuppressLint({"SetTextI18n", "SimpleDateFormat"})
     @Override
@@ -48,12 +52,33 @@ public class EditToDo extends AppCompatActivity {
         name = findViewById(R.id.editTaskName);
         date = findViewById(R.id.editTaskDueDate);
         dueDateBox = findViewById(R.id.dueDateBox);
+        nameBox = findViewById(R.id.titleBox);
+        coordinatorLayout = findViewById(R.id.myCoordinatorLayout);
 
         name.setText(toDo.getText());
         if (toDo.getDate() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
             date.setText(sdf.format(toDo.getDate()));
         }
+
+        // Make box go red if the name is blank
+        name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Change box red if it is empty
+                titleError(charSequence.length() <= 0);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         // Make the date box go red if there is an invalid date. Also convert a valid date to a Date object to store in the To Do object
         date.addTextChangedListener(new TextWatcher() {
@@ -65,29 +90,29 @@ public class EditToDo extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 // Check that the entered text is a valid date
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-                    sdf.setLenient(false);
-                    newDate = sdf.parse(charSequence.toString());
+                if (charSequence.length() > 0) {
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                        sdf.setLenient(false);
+                        newDate = sdf.parse(charSequence.toString());
 
-                    // It is a valid date
-                    // Make sure text field is regularly colored
-                    dueDateBox.setBoxStrokeColor(getResources().getColor(R.color.purple_500));
-                    dueDateBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_500)));
-                } catch (ParseException e) {
-                    // Invalid date
+                        // It is a valid date
+                        validDate = true;
+                        // Make sure text field is regularly colored
+                        dueDateError(false);
+                    } catch (ParseException e) {
+                        // Invalid date
+                        validDate = false;
 
-                    // Clear the Date stored if the user entered a valid date, then changed it to be invalid
-                    newDate = null;
+                        // Clear the Date stored if the user entered a valid date, then changed it to be invalid
+                        newDate = null;
 
-                    // Only give the user the red box of judgement if they have entered a whole date
-                    if (charSequence.toString().split("/").length > 2) {
-                        dueDateBox.setBoxStrokeColor(getResources().getColor(R.color.error_red));
-                        dueDateBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.error_red)));
-                    } else {
-                        dueDateBox.setBoxStrokeColor(getResources().getColor(R.color.purple_500));
-                        dueDateBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_500)));
+                        // Only give the user the red box of judgement if they have entered a whole date
+                        dueDateError(charSequence.toString().split("/").length > 2);
                     }
+                } else {
+                    validDate = true;
+                    newDate = null;
                 }
             }
 
@@ -107,12 +132,26 @@ public class EditToDo extends AppCompatActivity {
 
     public void submit(View view) {
         // Set new name and date, if the user entered them
+
         //noinspection ConstantConditions
         String newName = name.getText().toString();
         if (!newName.equals(""))
-            toDo.setText(name.getText().toString());
-        if (newDate != null)
+            toDo.setText(newName);
+        else {
+            nameBox.setBoxStrokeColor(getResources().getColor(R.color.error_red));
+            nameBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.error_red)));
+            makeNotification("Please enter a task name");
+            return;
+        }
+
+        if (validDate) {
             toDo.setDate(newDate);
+        } else {
+            dueDateBox.setBoxStrokeColor(getResources().getColor(R.color.error_red));
+            dueDateBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.error_red)));
+            makeNotification("Please enter a valid date");
+            return;
+        }
 
         goBack(view);
     }
@@ -144,5 +183,34 @@ public class EditToDo extends AppCompatActivity {
         alert.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
 
         alert.show();
+    }
+
+    private void makeNotification(String msg) {
+        Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), msg, Snackbar.LENGTH_LONG);
+        sb.show();
+    }
+
+    private void titleError(boolean error) {
+        if (error) {
+            nameBox.setBoxStrokeColor(getResources().getColor(R.color.error_red));
+            nameBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.error_red)));
+            nameBox.setHelperText("Please enter a title");
+        } else {
+            nameBox.setBoxStrokeColor(getResources().getColor(R.color.purple_500));
+            nameBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_500)));
+            nameBox.setHelperText(" ");
+        }
+    }
+
+    private void dueDateError(boolean error) {
+        if (error) {
+            dueDateBox.setBoxStrokeColor(getResources().getColor(R.color.error_red));
+            dueDateBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.error_red)));
+            dueDateBox.setHelperText("Invalid date");
+        } else {
+            dueDateBox.setBoxStrokeColor(getResources().getColor(R.color.purple_500));
+            dueDateBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_500)));
+            dueDateBox.setHelperText(" ");
+        }
     }
 }
