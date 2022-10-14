@@ -1,17 +1,18 @@
 package com.example.todolist;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class ToDo implements Serializable {
     private String text;
     private boolean done;
-    private String date;
+    private Date date;
 
     public ToDo(String text) {
         this.text = text;
     }
 
-    public ToDo(String text, boolean done, String date) {
+    public ToDo(String text, boolean done, Date date) {
         this.text = text;
         this.done = done;
         this.date = date;
@@ -33,11 +34,11 @@ public class ToDo implements Serializable {
         this.done = done;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 }
