@@ -138,8 +138,7 @@ public class EditToDo extends AppCompatActivity {
         if (!newName.equals(""))
             toDo.setText(newName);
         else {
-            nameBox.setBoxStrokeColor(getResources().getColor(R.color.error_red));
-            nameBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.error_red)));
+            titleError(true);
             makeNotification("Please enter a task name");
             return;
         }
@@ -147,8 +146,7 @@ public class EditToDo extends AppCompatActivity {
         if (validDate) {
             toDo.setDate(newDate);
         } else {
-            dueDateBox.setBoxStrokeColor(getResources().getColor(R.color.error_red));
-            dueDateBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.error_red)));
+            dueDateError(true);
             makeNotification("Please enter a valid date");
             return;
         }
