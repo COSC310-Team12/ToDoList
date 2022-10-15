@@ -49,19 +49,19 @@ public class EditToDo extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        int index = intent.getIntExtra("Index",-1);
+        int index = intent.getIntExtra("Index", -1);
 
-        //noinspection unchecked
+        // noinspection unchecked
         toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
         toDo = toDoList.get(index);
 
         String activityTitle = toDo.getText();
         if (activityTitle.length() > 25) {
-            activityTitle = activityTitle.substring(0,25);
+            activityTitle = activityTitle.substring(0, 25);
             activityTitle += "...";
         }
 
-        ((TextView)findViewById(R.id.editTaskTextView)).setText("Edit \"" + activityTitle + "\"");
+        ((TextView) findViewById(R.id.editTaskTextView)).setText("Edit \"" + activityTitle + "\"");
 
         name = findViewById(R.id.editTaskName);
         date = findViewById(R.id.editTaskDueDate);
@@ -171,7 +171,7 @@ public class EditToDo extends AppCompatActivity {
     public void goBack(View view) {
         // return to main activity
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("ToDoList",toDoList);
+        intent.putExtra("ToDoList", toDoList);
         startActivity(intent);
     }
 
@@ -181,17 +181,17 @@ public class EditToDo extends AppCompatActivity {
         alert.setMessage("Are you sure you want to delete?");
         alert.setPositiveButton("Yes",
                 (dialog, which) -> {
-            toDoList.remove(toDo);
+                    toDoList.remove(toDo);
 
-            dialog.dismiss();
+                    dialog.dismiss();
 
-            Intent intent = new Intent(view.getContext(), MainActivity.class);
-            // Notify main activity to show message
-            intent.putExtra("Notification",0);
-            intent.putExtra("ToDoList",toDoList);
-            intent.putExtra("deletedToDo", toDo);
-            startActivity(intent);
-        });
+                    Intent intent = new Intent(view.getContext(), MainActivity.class);
+                    // Notify main activity to show message
+                    intent.putExtra("Notification", 0);
+                    intent.putExtra("ToDoList", toDoList);
+                    intent.putExtra("deletedToDo", toDo);
+                    startActivity(intent);
+                });
         alert.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
 
         alert.show();

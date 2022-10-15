@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             //noinspection unchecked
             toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
             // Get completed tasks from the save file
-            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(getFilesDir(), "savedToDos.dat")))){
+            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(getFilesDir(), "savedToDos.dat")))) {
                 // Try loading from saved file
                 in.readObject();
                 //noinspection unchecked
@@ -95,25 +95,27 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             }
             // Save changes after editing
             save();
-        } else try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(getFilesDir(), "savedToDos.dat")))){
-            // FOR DEBUGGING ONLY
-            final boolean LOAD_FROM_FILE = true;
-            if (!LOAD_FROM_FILE) throw new FileNotFoundException("Not loading from file for debug purposes. To change this behavior, change LOAD_FROM_FILE to true");
-            // Try loading from saved file
-            //noinspection unchecked
-            toDoList = (ArrayList<ToDo>) in.readObject();
-            //noinspection unchecked
-            completed = (ArrayList<ToDo>) in.readObject();
-        } catch (FileNotFoundException e) {
-            // Load default tasks
-            toDoList = new ArrayList<>();
-            completed = new ArrayList<>();
-            setToDos();
-            // Save new state
-            save();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        } else
+            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(getFilesDir(), "savedToDos.dat")))) {
+                // FOR DEBUGGING ONLY
+                final boolean LOAD_FROM_FILE = true;
+                if (!LOAD_FROM_FILE)
+                    throw new FileNotFoundException("Not loading from file for debug purposes. To change this behavior, change LOAD_FROM_FILE to true");
+                // Try loading from saved file
+                //noinspection unchecked
+                toDoList = (ArrayList<ToDo>) in.readObject();
+                //noinspection unchecked
+                completed = (ArrayList<ToDo>) in.readObject();
+            } catch (FileNotFoundException e) {
+                // Load default tasks
+                toDoList = new ArrayList<>();
+                completed = new ArrayList<>();
+                setToDos();
+                // Save new state
+                save();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
 
         setAdapter();
     }
@@ -196,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     }
 
     public void makeNotification(String msg) {
-        Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), msg,Snackbar.LENGTH_LONG);
+        Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), msg, Snackbar.LENGTH_LONG);
         sb.show();
     }
 }

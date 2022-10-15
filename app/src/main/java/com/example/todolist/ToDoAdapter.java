@@ -37,7 +37,7 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
     //
     @Override
     public void onBindViewHolder(@NonNull ToDoAdapter.MyViewHolder holder, int position) {
-        String toDoText= toDoList.get(position).getText();
+        String toDoText = toDoList.get(position).getText();
         holder.checkBox.setText(toDoText);
         holder.checkBox.setChecked(toDoList.get(position).isDone());
         holder.checkBox.setOnCheckedChangeListener((compoundButton, b) -> toDoClickListener.onCheckClick(compoundButton, holder.getAdapterPosition()));
@@ -46,7 +46,7 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
     // return collection size or 0 if toDoList is null
     @Override
     public int getItemCount() {
-        return toDoList == null? 0: toDoList.size();
+        return toDoList == null ? 0 : toDoList.size();
     }
 
     // setting ClickListener
@@ -57,6 +57,7 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
     // inner class
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final CheckBox checkBox;
+
         public MyViewHolder(final View view) {
             super(view);
             checkBox = view.findViewById(R.id.checkBox);
@@ -65,7 +66,8 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
 
         @Override
         public void onClick(View view) {
-            if (toDoClickListener != null) toDoClickListener.onEditClick(view, getAdapterPosition());
+            if (toDoClickListener != null)
+                toDoClickListener.onEditClick(view, getAdapterPosition());
         }
     }
 }
