@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -69,6 +70,14 @@ public class EditToDo extends AppCompatActivity {
         dueDateBox = findViewById(R.id.dueDateBox);
         nameBox = findViewById(R.id.titleBox);
         coordinatorLayout = findViewById(R.id.myCoordinatorLayout);
+
+        Button cancelEditButton = findViewById(R.id.cancelEditButton);
+        Button deleteButton = findViewById(R.id.deleteButton);
+        Button submitEditButton = findViewById(R.id.submitEditButton);
+
+        cancelEditButton.setOnClickListener(this::goBack);
+        deleteButton.setOnClickListener(this::deleteToDo);
+        submitEditButton.setOnClickListener(this::submit);
 
         name.setText(toDo.getText());
         if (toDo.getDate() != null) {
@@ -176,7 +185,7 @@ public class EditToDo extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void deleteButton(View view) {
+    public void deleteToDo(View view) {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Delete");
         alert.setMessage("Are you sure you want to delete?");

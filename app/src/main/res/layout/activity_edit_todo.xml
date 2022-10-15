@@ -92,7 +92,6 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="goBack"
                 android:text="@string/cancel"
                 android:textColor="#757575" />
 
@@ -103,7 +102,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
-                android:onClick="deleteButton"
                 android:text="@string/delete"
                 android:textColor="@android:color/holo_red_dark" />
 
@@ -112,7 +110,6 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="submit"
                 android:text="@string/submit" />
         </LinearLayout>
 
