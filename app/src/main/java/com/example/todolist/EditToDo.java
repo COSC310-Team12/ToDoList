@@ -25,8 +25,9 @@ import java.util.Date;
 
 /*
 This class controls the edit to-do page. Users can navigate to this page by clicking on a to-do
-on the main page. This triggers the onClick() method and sends the to-do array list to this class.
-Here, users can change the text of their to-do, and set a due date. Once they are done,
+on the main page. This triggers the onEditClick() method and sends the to-do array list to this class.
+On this page, users can change the text of their to-do, and set a due date.
+Error checking is performed for both of those operations. Once the user is done,
 they can return to the main page.
 */
 
@@ -75,7 +76,7 @@ public class EditToDo extends AppCompatActivity {
             date.setText(sdf.format(toDo.getDate()));
         }
 
-        // Make box go red if the name is blank
+        // make box go red if the name is blank
         name.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -84,7 +85,7 @@ public class EditToDo extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // Change box red if it is empty
+                // change box red if it is empty
                 titleError(charSequence.length() <= 0);
             }
 
@@ -94,7 +95,7 @@ public class EditToDo extends AppCompatActivity {
             }
         });
 
-        // Make the date box go red if there is an invalid date. Also convert a valid date to a Date object to store in the To Do object
+        // make the date box go red if there is an invalid date. Also convert a valid date to a Date object to store in the To Do object
         date.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
@@ -103,25 +104,25 @@ public class EditToDo extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                // Check that the entered text is a valid date
+                // check that the entered text is a valid date
                 if (charSequence.length() > 0) {
                     try {
                         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
                         sdf.setLenient(false);
                         newDate = sdf.parse(charSequence.toString());
 
-                        // It is a valid date
+                        // it is a valid date
                         validDate = true;
-                        // Make sure text field is regularly colored
+                        // make sure text field is regularly colored
                         dueDateError(false);
                     } catch (ParseException e) {
-                        // Invalid date
+                        // invalid date
                         validDate = false;
 
-                        // Clear the Date stored if the user entered a valid date, then changed it to be invalid
+                        // clear the Date stored if the user entered a valid date, then changed it to be invalid
                         newDate = null;
 
-                        // Only give the user the red box of judgement if they have entered a whole date
+                        // only give the user the red box of judgement if they have entered a whole date
                         dueDateError(charSequence.toString().split("/").length > 2);
                     }
                 } else {
@@ -136,7 +137,7 @@ public class EditToDo extends AppCompatActivity {
             }
         });
 
-        // Make pressing enter in the final text box submit the changes
+        // make pressing enter in the final text box submit the changes
         date.setOnEditorActionListener((textView, i, keyEvent) -> {
             if (i == 6 || keyEvent.getAction() == 0)
                 submit(textView);
@@ -186,7 +187,7 @@ public class EditToDo extends AppCompatActivity {
                     dialog.dismiss();
 
                     Intent intent = new Intent(view.getContext(), MainActivity.class);
-                    // Notify main activity to show message
+                    // notify main activity to show message
                     intent.putExtra("Notification", 0);
                     intent.putExtra("ToDoList", toDoList);
                     intent.putExtra("deletedToDo", toDo);

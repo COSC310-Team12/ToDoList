@@ -55,16 +55,16 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
         Intent intent = getIntent();
 
-        // Load in data
+        // load in data
         loadData(intent);
 
-        // Handle any notifications requested by previous activity
+        // handle any notifications requested by previous activity
         if (intent.hasExtra("Notification")) {
             int notification = intent.getIntExtra("Notification", -1);
             if (notification == 0) {
                 Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Task deleted", Snackbar.LENGTH_LONG);
                 sb.setAction("UNDO", view -> {
-                    // Undo delete
+                    // undo delete
                     toDoList.add((ToDo) intent.getSerializableExtra("deletedToDo"));
                     recyclerAdapter.notifyItemInserted(recyclerAdapter.getItemCount());
                 });
@@ -79,21 +79,21 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     private void loadData(Intent intent) {
         if (intent.hasExtra("ToDoList")) {
-            // Load toDoList from previous activity if it was passed in the intent
-            //noinspection unchecked
+            // load toDoList from previous activity if it was passed in the intent
+            // noinspection unchecked
             toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
-            // Get completed tasks from the save file
+            // get completed tasks from the save file
             try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(getFilesDir(), "savedToDos.dat")))) {
-                // Try loading from saved file
+                // try loading from saved file
                 in.readObject();
-                //noinspection unchecked
+                // noinspection unchecked
                 completed = (ArrayList<ToDo>) in.readObject();
             } catch (FileNotFoundException e) {
                 completed = new ArrayList<>();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
-            // Save changes after editing
+            // save changes after editing
             save();
         } else
             try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(getFilesDir(), "savedToDos.dat")))) {
@@ -101,17 +101,16 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 final boolean LOAD_FROM_FILE = true;
                 if (!LOAD_FROM_FILE)
                     throw new FileNotFoundException("Not loading from file for debug purposes. To change this behavior, change LOAD_FROM_FILE to true");
-                // Try loading from saved file
-                //noinspection unchecked
+                // try loading from saved file
+                // noinspection unchecked
                 toDoList = (ArrayList<ToDo>) in.readObject();
-                //noinspection unchecked
+                // noinspection unchecked
                 completed = (ArrayList<ToDo>) in.readObject();
             } catch (FileNotFoundException e) {
-                // Load default tasks
+                // load default tasks
                 toDoList = new ArrayList<>();
                 completed = new ArrayList<>();
-                setToDos();
-                // Save new state
+                // save new state
                 save();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -121,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     }
 
     private void save() {
-        // Save toDoList array
+        // save toDoList array
         File file = new File(getFilesDir(), "savedToDos.dat");
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
             out.writeObject(toDoList);
@@ -149,12 +148,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         }
     }
 
-    private void setToDos() {
-        // may implement with database later on
-        toDoList.add(new ToDo("Finish prototype"));
-        toDoList.add(new ToDo("Improve design"));
-    }
-
     private void setAdapter() {
         // boiler-plate code
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -170,7 +163,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         return editText.getText().toString().trim().length() == 0;
     }
 
-    // bound to the RecyclerView elements (individual to-dos)
+    // bound to the RecyclerView elements (individual to-dos), called when user clicks
+    // on three dots on to-do
     @Override
     public void onEditClick(View view, int position) {
         Intent i = new Intent(this, EditToDo.class);
@@ -180,20 +174,21 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         startActivity(i);
     }
 
+    // called when users click the checkbox on a to-do
     @Override
     public void onCheckClick(View view, int position) {
-        // Move completed task to the completed list
+        // move completed task to the completed list
         ToDo completedTask = toDoList.remove(position);
         completedTask.setDone(!completedTask.isDone());
         completed.add(completedTask);
 
-        // Save changes
+        // save changes
         save();
 
         // load data again
         loadData();
 
-        // Alert the user of their action
+        // alert the user of their action
         makeNotification("Completed \"" + completedTask.getText() + "\"");
     }
 
