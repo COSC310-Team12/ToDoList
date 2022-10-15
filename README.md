@@ -27,3 +27,6 @@ custom ViewHolder.
 
 **ToDoClickListener** is an interface implemented by the **MainActivity**. It contains the onClick method.
 
+# Compiling our code:
+
+

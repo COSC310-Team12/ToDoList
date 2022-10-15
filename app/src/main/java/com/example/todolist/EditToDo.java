@@ -12,6 +12,14 @@ import android.widget.TextView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.Objects;
+
+/*
+This class controls the edit to-do page. Users can navigate to this page by clicking on a to-do
+on the main page. This triggers the onClick() method and sends the to-do array list to this class.
+Here, users can change the text of their to-do, and set a due date. Once they are done,
+they can return to the main page.
+*/
 
 public class EditToDo extends AppCompatActivity {
     TextInputEditText name, date;
@@ -38,9 +46,11 @@ public class EditToDo extends AppCompatActivity {
         date = findViewById(R.id.editTaskDueDate);
     }
 
+    // called by submit button
     public void submit(View view) {
-        // Set new name and date, if the user entered them
-        String newName = name.getText().toString(), newDate = date.getText().toString();
+        // set new name and date, if the user entered them
+        String newName = Objects.requireNonNull(name.getText()).toString(),
+                newDate = Objects.requireNonNull(date.getText()).toString();
         if (!newName.equals(""))
             toDo.setText(name.getText().toString());
         if (!newDate.equals(""))
@@ -50,7 +60,7 @@ public class EditToDo extends AppCompatActivity {
     }
 
     public void goBack(View view) {
-        // Return to main activity
+        // return to main activity
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("ToDoList",toDoList);
         startActivity(intent);

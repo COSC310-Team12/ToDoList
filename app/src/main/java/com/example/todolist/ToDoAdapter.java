@@ -10,7 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-// boiler-plate code to set RecyclerView to ArrayList content
+/*
+This class initializes the RecyclerView to ArrayList content.
+Because it extends the abstract class RecyclerView.Adapter, it needs to implement its methods.
+The inner class MyViewHolder sets an OnClick listener on individual to-do's.
+*/
+
 public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> {
 
     private final ArrayList<ToDo> toDoList;
@@ -20,6 +25,7 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
         this.toDoList = toDoList;
     }
 
+    // creates a new ViewHolder if there are no pre-existing ones
     @NonNull
     @Override
     public ToDoAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -27,21 +33,25 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
         return new MyViewHolder(itemView);
     }
 
+    //
     @Override
     public void onBindViewHolder(@NonNull ToDoAdapter.MyViewHolder holder, int position) {
         String toDoText= toDoList.get(position).getText();
         holder.toDoText.setText(toDoText);
     }
 
+    // return collection size or 0 if toDoList is null
     @Override
     public int getItemCount() {
         return toDoList == null? 0: toDoList.size();
     }
 
+    // setting ClickListener
     public void setClickListener(ToDoClickListener toDoClickListener) {
         this.toDoClickListener = toDoClickListener;
     }
 
+    // inner class
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView toDoText;
         public MyViewHolder(final View view) {
