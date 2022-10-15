@@ -31,16 +31,19 @@
             android:textSize="18sp" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/titleBox"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:hint="Title">
+            android:hint="Title"
+            app:helperText=" "
+            app:helperTextTextColor="@color/error_red">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTaskName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textShortMessage|textAutoCorrect" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -52,18 +55,33 @@
             android:textSize="18sp" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dueDateBox"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:hint="DD/MM/YYYY">
+            android:hint="MM/DD/YYYY"
+            app:helperText=" "
+            app:helperTextTextColor="@color/error_red">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTaskDueDate"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="date" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/myCoordinatorLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:orientation="horizontal"></LinearLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -73,16 +91,29 @@
 
             <Button
                 android:id="@+id/cancelEditButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="goBack"
-                android:text="Cancel" />
+                android:text="Cancel"
+                android:textColor="@android:color/darker_gray" />
 
             <Button
-                android:id="@+id/submitEditButton"
+                android:id="@+id/deleteButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:onClick="deleteButton"
+                android:text="Delete"
+                android:textColor="@android:color/holo_red_dark" />
+
+            <Button
+                android:id="@+id/submitEditButton"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:onClick="submit"
                 android:text="Submit" />
         </LinearLayout>
