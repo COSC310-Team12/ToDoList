@@ -3,7 +3,7 @@
 ## About
 This is the repository for our COSC310 project. We are creating an Android to-do list app for students.
 
-## Class structure:
+## Class structure
 All layout code is stored in the layout folder as three xml files.
 - activity_main.xml contains the layout for our main screen, including a RecyclerView for to-do items
 - todo_item.xml is the layout of an individual to-do item, which are used to populate the RecyclerView
@@ -28,7 +28,7 @@ custom ViewHolder.
 **ToDoClickListener** is an interface implemented by the **MainActivity**. 
 It contains the onEditClick() and onCheckClick() method.
 
-# Compiling our code:
+## Compiling our code
 There are two ways to compile our code:
 1) clone the project in Android studio and run it on an emulator in the app
 2) use this apk file to install the app on an Android phone
