@@ -13,26 +13,16 @@
         android:layout_marginBottom="70dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Here are the existing layout elements, now wrapped in
-             a CoordinatorLayout -->
-        <LinearLayout
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- …Toolbar, other layouts, other elements… -->
-
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="70dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
         android:id="@+id/inputToDo"

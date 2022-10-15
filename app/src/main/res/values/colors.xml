@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="light_grey">#FF999999</color>
+    <color name="error_red">#FFe00f00</color>
+    <color name="default_">#FF757575</color>
+    <color name="default_box_stroke">#FF9e9e9e</color>
+    <color name="default_box_hint">#FF666666</color>
 </resources>
