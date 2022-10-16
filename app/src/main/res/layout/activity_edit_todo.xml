@@ -21,13 +21,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="Edit Task"
+            android:text="@string/edit_task"
             android:textSize="26sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Task Name"
+            android:text="@string/task_name"
             android:textSize="18sp" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -35,7 +35,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Title"
+            android:hint="@string/title"
             app:helperText=" "
             app:helperTextTextColor="@color/error_red">
 
@@ -43,7 +43,8 @@
                 android:id="@+id/editTaskName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textShortMessage|textAutoCorrect" />
+                android:inputType="textShortMessage|textAutoCorrect"
+                android:textColorHint="#757575" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:text="Due Date"
+            android:text="@string/due_date"
             android:textSize="18sp" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -59,7 +60,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="MM/DD/YYYY"
+            android:hint="@string/mm_dd_yyyy"
             app:helperText=" "
             app:helperTextTextColor="@color/error_red">
 
@@ -67,7 +68,8 @@
                 android:id="@+id/editTaskDueDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="date" />
+                android:inputType="date"
+                android:textColorHint="#757575" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -94,9 +96,8 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="goBack"
-                android:text="Cancel"
-                android:textColor="@android:color/darker_gray" />
+                android:text="@string/cancel"
+                android:textColor="#757575" />
 
             <Button
                 android:id="@+id/deleteButton"
@@ -105,8 +106,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
-                android:onClick="deleteButton"
-                android:text="Delete"
+                android:text="@string/delete"
                 android:textColor="@android:color/holo_red_dark" />
 
             <Button
@@ -114,8 +114,7 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="submit"
-                android:text="Submit" />
+                android:text="@string/submit" />
         </LinearLayout>
 
     </LinearLayout>

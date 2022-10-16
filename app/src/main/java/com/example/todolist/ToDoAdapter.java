@@ -11,42 +11,59 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-// boiler-plate code to set RecyclerView to ArrayList content
+/*
+This class is responsible for displaying the content of our toDoList ArrayList in the RecyclerView.
+Because it extends the abstract class RecyclerView.Adapter, it needs to implement its methods.
+The inner class MyViewHolder sets an OnClick listener on individual to-do items.
+
+See this youtube video for a good introduction to RecyclerAdapters:
+https://www.youtube.com/watch?v=9rcrYFO1ogc&list=WL&index=2
+*/
+
 public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> {
 
     private final ArrayList<ToDo> toDoList;
     private ToDoClickListener toDoClickListener;
 
+    // constructor to initialize toDoList to values from toDoList in MainActivity
     public ToDoAdapter(ArrayList<ToDo> toDoList) {
         this.toDoList = toDoList;
     }
 
+    // creates individual to-do item
     @NonNull
     @Override
     public ToDoAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // uses todo_item.xml as template
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.todo_item, parent, false);
         return new MyViewHolder(itemView);
     }
 
+    // can set data for to-do item at specific position, doing this using toDoList ArrayList
     @Override
     public void onBindViewHolder(@NonNull ToDoAdapter.MyViewHolder holder, int position) {
-        String toDoText= toDoList.get(position).getText();
+        String toDoText = toDoList.get(position).getText();
         holder.checkBox.setText(toDoText);
         holder.checkBox.setChecked(toDoList.get(position).isDone());
         holder.checkBox.setOnCheckedChangeListener((compoundButton, b) -> toDoClickListener.onCheckClick(compoundButton, holder.getAdapterPosition()));
     }
 
+    // returns number of rows = size of toDoList or 0 if toDoList is null
     @Override
     public int getItemCount() {
-        return toDoList == null? 0: toDoList.size();
+        return toDoList == null ? 0 : toDoList.size();
     }
 
+    // setting ClickListener
     public void setClickListener(ToDoClickListener toDoClickListener) {
         this.toDoClickListener = toDoClickListener;
     }
 
+    // inner class responsible for managing to-do items
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        // can access views (checkbox and dots image) contained in to-do item in here
         private final CheckBox checkBox;
+
         public MyViewHolder(final View view) {
             super(view);
             checkBox = view.findViewById(R.id.checkBox);
@@ -55,7 +72,8 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
 
         @Override
         public void onClick(View view) {
-            if (toDoClickListener != null) toDoClickListener.onEditClick(view, getAdapterPosition());
+            if (toDoClickListener != null)
+                toDoClickListener.onEditClick(view, getAdapterPosition());
         }
     }
 }

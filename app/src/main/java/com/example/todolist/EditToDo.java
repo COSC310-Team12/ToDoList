@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +21,16 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Date;
+
+/*
+This class controls the edit to-do page. Users can navigate to this page by clicking on a to-do
+on the main page. This triggers the onEditClick() method and sends the to-do array list to this class.
+On this page, users can change the text of their to-do, and set a due date.
+Error checking is performed for both of those operations. Once the user is done,
+they can return to the main page.
+*/
 
 public class EditToDo extends AppCompatActivity {
     TextInputEditText name, date;
@@ -41,19 +51,19 @@ public class EditToDo extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        int index = intent.getIntExtra("Index",-1);
+        int index = intent.getIntExtra("Index", -1);
 
-        //noinspection unchecked
+        // noinspection unchecked
         toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
         toDo = toDoList.get(index);
 
         String activityTitle = toDo.getText();
         if (activityTitle.length() > 25) {
-            activityTitle = activityTitle.substring(0,25);
+            activityTitle = activityTitle.substring(0, 25);
             activityTitle += "...";
         }
 
-        ((TextView)findViewById(R.id.editTaskTextView)).setText("Edit \"" + activityTitle + "\"");
+        ((TextView) findViewById(R.id.editTaskTextView)).setText("Edit \"" + activityTitle + "\"");
 
         name = findViewById(R.id.editTaskName);
         date = findViewById(R.id.editTaskDueDate);
@@ -61,13 +71,21 @@ public class EditToDo extends AppCompatActivity {
         nameBox = findViewById(R.id.titleBox);
         coordinatorLayout = findViewById(R.id.myCoordinatorLayout);
 
+        Button cancelEditButton = findViewById(R.id.cancelEditButton);
+        Button deleteButton = findViewById(R.id.deleteButton);
+        Button submitEditButton = findViewById(R.id.submitEditButton);
+
+        cancelEditButton.setOnClickListener(this::goBack);
+        deleteButton.setOnClickListener(this::deleteToDo);
+        submitEditButton.setOnClickListener(this::submit);
+
         name.setText(toDo.getText());
         if (toDo.getDate() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
             date.setText(sdf.format(toDo.getDate()));
         }
 
-        // Make box go red if the name is blank
+        // make box go red if the name is blank
         name.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -76,7 +94,7 @@ public class EditToDo extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // Change box red if it is empty
+                // change box red if it is empty
                 titleError(charSequence.length() <= 0);
             }
 
@@ -86,7 +104,7 @@ public class EditToDo extends AppCompatActivity {
             }
         });
 
-        // Make the date box go red if there is an invalid date. Also convert a valid date to a Date object to store in the To Do object
+        // make the date box go red if there is an invalid date. Also convert a valid date to a Date object to store in the To Do object
         date.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
@@ -95,25 +113,25 @@ public class EditToDo extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                // Check that the entered text is a valid date
+                // check that the entered text is a valid date
                 if (charSequence.length() > 0) {
                     try {
                         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
                         sdf.setLenient(false);
                         newDate = sdf.parse(charSequence.toString());
 
-                        // It is a valid date
+                        // it is a valid date
                         validDate = true;
-                        // Make sure text field is regularly colored
+                        // make sure text field is regularly colored
                         dueDateError(false);
                     } catch (ParseException e) {
-                        // Invalid date
+                        // invalid date
                         validDate = false;
 
-                        // Clear the Date stored if the user entered a valid date, then changed it to be invalid
+                        // clear the Date stored if the user entered a valid date, then changed it to be invalid
                         newDate = null;
 
-                        // Only give the user the red box of judgement if they have entered a whole date
+                        // only give the user the red box of judgement if they have entered a whole date
                         dueDateError(charSequence.toString().split("/").length > 2);
                     }
                 } else {
@@ -128,7 +146,7 @@ public class EditToDo extends AppCompatActivity {
             }
         });
 
-        // Make pressing enter in the final text box submit the changes
+        // make pressing enter in the final text box submit the changes
         date.setOnEditorActionListener((textView, i, keyEvent) -> {
             if (i == 6 || keyEvent.getAction() == 0)
                 submit(textView);
@@ -136,11 +154,11 @@ public class EditToDo extends AppCompatActivity {
         });
     }
 
+    // called by submit button
     public void submit(View view) {
-        // Set new name and date, if the user entered them
+        // set new name and date, if the user entered them
 
-        //noinspection ConstantConditions
-        String newName = name.getText().toString();
+        String newName = Objects.requireNonNull(name.getText()).toString();
         if (!newName.equals(""))
             toDo.setText(newName);
         else {
@@ -161,29 +179,29 @@ public class EditToDo extends AppCompatActivity {
     }
 
     public void goBack(View view) {
-        // Return to main activity
+        // return to main activity
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("ToDoList",toDoList);
+        intent.putExtra("ToDoList", toDoList);
         startActivity(intent);
     }
 
-    public void deleteButton(View view) {
+    public void deleteToDo(View view) {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Delete");
         alert.setMessage("Are you sure you want to delete?");
         alert.setPositiveButton("Yes",
                 (dialog, which) -> {
-            toDoList.remove(toDo);
+                    toDoList.remove(toDo);
 
-            dialog.dismiss();
+                    dialog.dismiss();
 
-            Intent intent = new Intent(view.getContext(), MainActivity.class);
-            // Notify main activity to show message
-            intent.putExtra("Notification",0);
-            intent.putExtra("ToDoList",toDoList);
-            intent.putExtra("deletedToDo", toDo);
-            startActivity(intent);
-        });
+                    Intent intent = new Intent(view.getContext(), MainActivity.class);
+                    // notify main activity to show message
+                    intent.putExtra("Notification", 0);
+                    intent.putExtra("ToDoList", toDoList);
+                    intent.putExtra("deletedToDo", toDo);
+                    startActivity(intent);
+                });
         alert.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
 
         alert.show();

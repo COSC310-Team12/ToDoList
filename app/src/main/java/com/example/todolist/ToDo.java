@@ -3,6 +3,10 @@ package com.example.todolist;
 import java.io.Serializable;
 import java.util.Date;
 
+/*
+This is a serializable class to store information about to-dos.
+*/
+
 public class ToDo implements Serializable {
     private String text;
     private boolean done;
@@ -12,12 +16,14 @@ public class ToDo implements Serializable {
         this.text = text;
     }
 
+    // all arg constructor
     public ToDo(String text, boolean done, Date date) {
         this.text = text;
         this.done = done;
         this.date = date;
     }
 
+    // getters and setters
     public String getText() {
         return text;
     }
