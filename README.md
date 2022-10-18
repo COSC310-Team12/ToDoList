@@ -31,5 +31,5 @@ It contains the onEditClick() and onCheckClick() method.
 ## Compiling our code
 There are two ways to compile our code:
 1) clone the project in Android studio and run it on an emulator in the app
-2) use this apk file to install the app on an Android phone
+2) use the [apk file](https://github.com/COSC310-Team12/ToDoList/releases/download/v0.1.0/ToDoList-v0.1.0.apk) from our latest [release](https://github.com/COSC310-Team12/ToDoList/releases) to install the app on an Android phone
 
