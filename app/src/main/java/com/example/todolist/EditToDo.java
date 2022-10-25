@@ -180,9 +180,9 @@ public class EditToDo extends AppCompatActivity {
 
     public void goBack(View view) {
         // return to main activity
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("ToDoList", toDoList);
-        startActivity(intent);
+        setResult(RESULT_OK,
+                new Intent().putExtra("ToDoList", toDoList));
+        finish();
     }
 
     public void deleteToDo(View view) {

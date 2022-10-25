@@ -1,11 +1,13 @@
 package com.example.todolist;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,6 +29,8 @@ This class controls the main screen. It extends our custom ToDoClickListener.
 */
 
 public class MainActivity extends AppCompatActivity implements ToDoClickListener {
+
+    private final static int MY_REQUEST_CODE = 1;
 
     private ArrayList<ToDo> toDoList, completed;
     private RecyclerView recyclerView;
@@ -171,7 +175,19 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         // send toDoList so that we can edit it there, then reload it when returning to main activity
         i.putExtra("ToDoList", toDoList);
         i.putExtra("Index", position);
-        startActivity(i);
+        startActivityForResult(i, MY_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == MY_REQUEST_CODE) {
+                if (data != null) toDoList = (ArrayList<ToDo>) data.getSerializableExtra("ToDoList");
+                save();
+                loadData();
+            }
+        }
     }
 
     // called when users click the checkbox on a to-do
