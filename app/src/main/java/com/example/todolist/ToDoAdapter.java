@@ -26,9 +26,7 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
     private ToDoClickListener toDoClickListener;
 
     // constructor to initialize toDoList to values from toDoList in MainActivity
-    public ToDoAdapter(ArrayList<ToDo> toDoList) {
-        this.toDoList = toDoList;
-    }
+    public ToDoAdapter(ArrayList<ToDo> toDoList) { this.toDoList = toDoList; }
 
     // creates individual to-do item
     @NonNull

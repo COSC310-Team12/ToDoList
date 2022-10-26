@@ -21,6 +21,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Date;
 
@@ -52,7 +53,6 @@ public class EditToDo extends AppCompatActivity {
         Intent intent = getIntent();
 
         int index = intent.getIntExtra("Index", -1);
-
         // noinspection unchecked
         toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
         toDo = toDoList.get(index);
@@ -146,6 +146,7 @@ public class EditToDo extends AppCompatActivity {
             }
         });
 
+
         // make pressing enter in the final text box submit the changes
         date.setOnEditorActionListener((textView, i, keyEvent) -> {
             if (i == 6 || keyEvent.getAction() == 0)
@@ -157,7 +158,6 @@ public class EditToDo extends AppCompatActivity {
     // called by submit button
     public void submit(View view) {
         // set new name and date, if the user entered them
-
         String newName = Objects.requireNonNull(name.getText()).toString();
         if (!newName.equals(""))
             toDo.setText(newName);
