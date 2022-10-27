@@ -1,6 +1,7 @@
 package com.example.todolist;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
 
 /*
@@ -22,6 +23,27 @@ public class ToDo implements Serializable {
         this.done = done;
         this.date = date;
     }
+    public static Comparator<ToDo> DueDateAscComparator= new Comparator<ToDo>() {
+        @Override
+        public int compare(ToDo t1, ToDo t2) {
+            if(t1.getDate()==null)
+                return 1;
+            else if(t2.getDate()==null)
+                return -1;
+            else return t1.getDate().compareTo(t2.getDate());
+        }
+    };
+    public static Comparator<ToDo> DueDateDescComparator= new Comparator<ToDo>() {
+        @Override
+        public int compare(ToDo t1, ToDo t2) {
+            if(t1.getDate()==null)
+                return 1;
+            else if(t2.getDate()==null)
+                return -1;
+            else return t2.getDate().compareTo(t1.getDate());
+        }
+    };
+
 
     // getters and setters
     public String getText() {

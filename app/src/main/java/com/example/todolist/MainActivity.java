@@ -1,17 +1,25 @@
 package com.example.todolist;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.skydoves.powermenu.MenuAnimation;
+import com.skydoves.powermenu.OnMenuItemClickListener;
+import com.skydoves.powermenu.PowerMenu;
+import com.skydoves.powermenu.PowerMenuItem;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +30,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 /*
 This class controls the main screen. It extends our custom ToDoClickListener.
@@ -33,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private RecyclerView recyclerView;
     private ToDoAdapter recyclerAdapter;
     private EditText inputToDo;
+    private int sortingType=0;
 
     // initialization code
     @Override
@@ -116,7 +126,12 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
+            Collections.sort(toDoList, ToDo.DueDateDescComparator);
 
+        if(sortingType==0)
+            Collections.sort(toDoList, ToDo.DueDateAscComparator);
+        if(sortingType==1)
+            Collections.sort(toDoList, ToDo.DueDateDescComparator);
         setAdapter();
     }
 
@@ -143,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             inputToDo.getText().clear();
             // save changes
             save();
+            loadData();
         } else {
             // ask the user to enter a name for the task
             Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name", Snackbar.LENGTH_LONG).show();
@@ -196,5 +212,35 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     public void makeNotification(String msg) {
         Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), msg, Snackbar.LENGTH_LONG);
         sb.show();
+    }
+    public void onSort(View view){
+        ArrayList<PowerMenuItem> list=new ArrayList<>();
+        list.add(new PowerMenuItem("Ascending",false));
+        list.add(new PowerMenuItem("Descending",false));
+        OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener;
+        PowerMenu powerMenu = new PowerMenu.Builder(this)
+                .addItemList(list) // list has "Novel", "Poetry", "Art"
+                .setAnimation(MenuAnimation.SHOWUP_TOP_LEFT) // Animation start point (TOP | LEFT).
+                .setMenuRadius(10f) // sets the corner radius.
+                .setMenuShadow(10f) // sets the shadow.
+                .setTextColor(ContextCompat.getColor(this, R.color.black))
+                .setTextGravity(Gravity.CENTER)
+                .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                .setSelectedTextColor(Color.WHITE)
+                .setMenuColor(Color.WHITE)
+                .setSelectedMenuColor(ContextCompat.getColor(this, R.color.purple_500))
+                .setOnMenuItemClickListener(new OnMenuItemClickListener<PowerMenuItem>() {
+                    @Override
+                    public void onItemClick(int position, PowerMenuItem item) {
+                        if(position==0)
+                            sortingType = 0;
+                        if (position==1)
+                            sortingType = 1;
+                        loadData();
+                    }
+                })
+                .build();
+        powerMenu.showAsDropDown(view);
+
     }
 }

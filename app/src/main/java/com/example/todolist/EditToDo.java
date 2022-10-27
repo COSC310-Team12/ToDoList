@@ -56,7 +56,14 @@ public class EditToDo extends AppCompatActivity {
         // noinspection unchecked
         toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
         toDo = toDoList.get(index);
-
+        /*trying to sort by date.
+        for(int i=0;i<toDoList.size();i++){
+            if(toDo.getDate().compareTo(toDoList.get(i).getDate())<0){
+                index=i;
+            }
+        }
+        toDoList.set(index,toDo);
+         */
         String activityTitle = toDo.getText();
         if (activityTitle.length() > 25) {
             activityTitle = activityTitle.substring(0, 25);
