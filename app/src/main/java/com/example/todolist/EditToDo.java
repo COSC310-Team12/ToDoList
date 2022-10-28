@@ -63,7 +63,7 @@ public class EditToDo extends AppCompatActivity {
             activityTitle += "...";
         }
 
-        ((TextView) findViewById(R.id.editTaskTextView)).setText("Edit \"" + activityTitle + "\"");
+        ((TextView) findViewById(R.id.addTagsTitle)).setText("Edit \"" + activityTitle + "\"");
 
         name = findViewById(R.id.editTaskName);
         date = findViewById(R.id.editTaskDueDate);
@@ -73,7 +73,7 @@ public class EditToDo extends AppCompatActivity {
 
         Button cancelEditButton = findViewById(R.id.cancelEditButton);
         Button deleteButton = findViewById(R.id.deleteButton);
-        Button submitEditButton = findViewById(R.id.submitEditButton);
+        Button submitEditButton = findViewById(R.id.doneButton);
 
         cancelEditButton.setOnClickListener(this::goBack);
         deleteButton.setOnClickListener(this::deleteToDo);
@@ -180,9 +180,8 @@ public class EditToDo extends AppCompatActivity {
 
     public void goBack(View view) {
         // return to main activity
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("ToDoList", toDoList);
-        startActivity(intent);
+        setResult(RESULT_OK, new Intent().putExtra("ToDoList", toDoList));
+        finish();
     }
 
     public void deleteToDo(View view) {
@@ -200,7 +199,8 @@ public class EditToDo extends AppCompatActivity {
                     intent.putExtra("Notification", 0);
                     intent.putExtra("ToDoList", toDoList);
                     intent.putExtra("deletedToDo", toDo);
-                    startActivity(intent);
+                    setResult(RESULT_OK,intent);
+                    finish();
                 });
         alert.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
 

@@ -1,5 +1,7 @@
 package com.example.todolist;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +15,7 @@ public class ToDo implements Serializable {
     private String text;
     private boolean done;
     private Date date;
-    private ArrayList<String> tags = new ArrayList<>();
+    private final ArrayList<String> tags = new ArrayList<>();
 
     public ToDo(String text) {
         this.text = text;
@@ -52,15 +54,26 @@ public class ToDo implements Serializable {
     }
 
     public boolean addTag(String tag) {
-        if (tag != "")
+        if (!tag.equals(""))
             tags.add(tag);
         else
             return false;
         return true;
     }
 
-    public List<String> getTags() {
+    public ArrayList<String> getTags() {
         return tags;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "ToDo{" +
+                "text='" + text + '\'' +
+                ", done=" + done +
+                ", date=" + date +
+                ", tags=" + tags +
+                '}';
     }
 }
 

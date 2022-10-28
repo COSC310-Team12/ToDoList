@@ -3,6 +3,7 @@ package com.example.todolist;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,7 +33,7 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.MyViewHolder> {
     // creates individual to-do item
     @NonNull
     @Override
-    public TagAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // uses todo_item.xml as template
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_item, parent, false);
         return new MyViewHolder(itemView);
@@ -40,9 +41,10 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.MyViewHolder> {
 
     // can set data for to-do item at specific position, doing this using tagList ArrayList
     @Override
-    public void onBindViewHolder(@NonNull TagAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         String tagText = tagList.get(position);
         holder.text.setText(tagText);
+        holder.button.setOnClickListener(v -> tagClickListener.onDeleteClick(v, holder.getAdapterPosition()));
     }
 
     // returns number of rows = size of tagList or 0 if tagList is null
@@ -60,17 +62,19 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.MyViewHolder> {
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // can access views (checkbox and dots image) contained in to-do item in here
         private final TextView text;
+        private final ImageButton button;
 
         public MyViewHolder(final View view) {
             super(view);
             text = view.findViewById(R.id.tagName);
+            button = view.findViewById(R.id.imageButton);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             if (tagClickListener != null)
-                tagClickListener.onEditClick(view, getAdapterPosition());
+                tagClickListener.onDeleteClick(view, getAdapterPosition());
         }
     }
 }

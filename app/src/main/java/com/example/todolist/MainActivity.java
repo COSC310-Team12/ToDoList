@@ -1,7 +1,7 @@
 package com.example.todolist;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -20,7 +21,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.skydoves.powermenu.CustomPowerMenu;
 import com.skydoves.powermenu.MenuAnimation;
 import com.skydoves.powermenu.OnDismissedListener;
-import com.skydoves.powermenu.OnMenuItemClickListener;
 import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 
@@ -48,7 +48,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private ToDoAdapter recyclerAdapter;
     private EditText inputToDo;
     private List<FilterPowerMenuItem> filterItems;
-    private HashMap<String, Boolean> filters = new HashMap<>();
+    private final HashMap<String, Boolean> filters = new HashMap<>();
+    private final static int EDIT_TODO_ACTIVITY_REQUEST = 1, ADD_TAGS_ACTIVITY_REQUEST = 2;
 
     // initialization code
     @Override
@@ -70,78 +71,69 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             return true;
         });
 
-        Intent intent = getIntent();
-
-        // load in data
-        loadData(intent);
-
-        // handle any notifications requested by previous activity
-        if (intent.hasExtra("Notification")) {
-            int notification = intent.getIntExtra("Notification", -1);
-            if (notification == 0) {
-                Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Task deleted", Snackbar.LENGTH_LONG);
-                sb.setAction("UNDO", view -> {
-                    // undo delete
-                    toDoList.add((ToDo) intent.getSerializableExtra("deletedToDo"));
-                    recyclerAdapter.notifyItemInserted(recyclerAdapter.getItemCount());
-                });
-                sb.show();
-            }
-        }
+        // load in data from file
+        loadData();
     }
 
+    @SuppressWarnings("unchecked")
     private void loadData() {
-        loadData(new Intent());
-    }
-
-    private void loadData(Intent intent) {
-        if (intent.hasExtra("ToDoList")) {
-            // load toDoList from previous activity if it was passed in the intent
-            // noinspection unchecked
-            toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
-            // get completed tasks from the save file
-            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(getFilesDir(), "savedToDos.dat")))) {
-                // try loading from saved file
-                in.readObject();
-                // noinspection unchecked
-                completed = (ArrayList<ToDo>) in.readObject();
-            } catch (FileNotFoundException | ClassNotFoundException e) {
-                completed = new ArrayList<>();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            // save changes after editing
+        // Read in from file
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(getFilesDir(), "savedToDos.dat")))) {
+            // FOR DEBUGGING ONLY
+            final boolean LOAD_FROM_FILE = true;
+            if (!LOAD_FROM_FILE)
+                throw new FileNotFoundException("Not loading from file for debug purposes. To change this behavior, change LOAD_FROM_FILE to true");
+            // try loading from saved file
+            toDoList = (ArrayList<ToDo>) in.readObject();
+            completed = (ArrayList<ToDo>) in.readObject();
+        } catch (FileNotFoundException | ClassNotFoundException e) {
+            // load defaults
+            toDoList = new ArrayList<>();
+            completed = new ArrayList<>();
+            // save new state
             save();
-        } else {
-            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(getFilesDir(), "savedToDos.dat")))) {
-                // FOR DEBUGGING ONLY
-                final boolean LOAD_FROM_FILE = true;
-                if (!LOAD_FROM_FILE)
-                    throw new FileNotFoundException("Not loading from file for debug purposes. To change this behavior, change LOAD_FROM_FILE to true");
-                // try loading from saved file
-                // noinspection unchecked
-                toDoList = (ArrayList<ToDo>) in.readObject();
-                // noinspection unchecked
-                completed = (ArrayList<ToDo>) in.readObject();
-            } catch (FileNotFoundException | ClassNotFoundException e) {
-                // load default tasks
-                toDoList = new ArrayList<>();
-                completed = new ArrayList<>();
-                // save new state
-                save();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         // Apply the filter to each item to see if it should be displayed to the user
         filtered = new ArrayList<>();
-        for (ToDo toDo : toDoList) {
+        for (ToDo toDo : toDoList)
             if (filterAllows(toDo))
                 filtered.add(toDo);
-        }
 
         setAdapter();
+    }
+
+    // Generate the list of all filters from all saved tasks
+    private ArrayList<String> getFilterList() {
+        loadData();
+        ArrayList<String> out = new ArrayList<>();
+        out.add("Graded");
+        out.add("Ungraded");
+        ArrayList<String> nonDefault = new ArrayList<>();
+        for (ToDo toDo : toDoList) {
+            loop: for (String tag : toDo.getTags()) {
+                for (String s : nonDefault)
+                    if (s.equals(tag))
+                        continue loop;
+                nonDefault.add(tag);
+            }
+        }
+        for (ToDo toDo : completed) {
+            loop: for (String tag : toDo.getTags()) {
+                for (String s : nonDefault)
+                    if (s.equals(tag))
+                        continue loop;
+                nonDefault.add(tag);
+            }
+        }
+
+        Collections.sort(nonDefault);
+
+        out.addAll(nonDefault);
+
+        return out;
     }
 
     // Determines if the To Do item is allowed by the filter
@@ -215,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
         PowerMenu powerMenu = new PowerMenu.Builder(this)
                 .addItemList(itemList)
-                .setAnimation(MenuAnimation.SHOWUP_TOP_LEFT) // Animation start point (TOP | RIGHT).
+                .setAnimation(MenuAnimation.SHOWUP_TOP_RIGHT) // Animation start point (TOP | RIGHT).
                 .setMenuRadius(10f) // sets the corner radius.
                 .setMenuShadow(10f) // sets the shadow.
                 .setTextColor(ContextCompat.getColor(this, R.color.black))
@@ -231,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 // send toDoList so that we can edit it there, then reload it when returning to main activity
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", position);
-                startActivity(i);
+                startActivityForResult(i, EDIT_TODO_ACTIVITY_REQUEST);
             }
             else if (item.getTitle().equals("Delete")) { // Delete item
                 ToDo deletedTodo = toDoList.get(position);
@@ -266,19 +258,49 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 // send toDoList so that we can edit it there, then reload it when returning to main activity
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", position);
-                i.putExtra("Filters",filters);
-                startActivity(i);
+                startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
             }
         });
-        powerMenu.showAsDropDown(view); // view is where the menu is anchored
+        powerMenu.showAsAnchorRightBottom(view); // view is where the menu is anchored
+    }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            // For returning from edit activity
+            if (requestCode == EDIT_TODO_ACTIVITY_REQUEST) {
+                if (data != null) {
+                    toDoList = (ArrayList<ToDo>) data.getSerializableExtra("ToDoList");
+                    save();
+                    loadData();
 
-        // Old code
-       /* Intent i = new Intent(this, EditToDo.class);
-        // send toDoList so that we can edit it there, then reload it when returning to main activity
-        i.putExtra("ToDoList", toDoList);
-        i.putExtra("Index", position);
-        startActivity(i);*/
+                    // handle any notifications requested by previous activity
+                    if (data.hasExtra("Notification")) {
+                        int notification = data.getIntExtra("Notification", -1);
+                        if (notification == 0) {
+                            Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Task deleted", Snackbar.LENGTH_LONG);
+                            sb.setAction("UNDO", view -> {
+                                // undo delete
+                                toDoList.add((ToDo) data.getSerializableExtra("deletedToDo"));
+                                save();
+                                loadData();
+                            });
+                            sb.show();
+                        }
+                    }
+                }
+            }
+            // For returning from the add tags activity
+            else if (requestCode == ADD_TAGS_ACTIVITY_REQUEST) {
+                if (data != null) {
+                    toDoList = (ArrayList<ToDo>) data.getSerializableExtra("ToDoList");
+                    save();
+                    loadData();
+                }
+            }
+        }
     }
 
     // called when users click the checkbox on a to-do
@@ -307,27 +329,40 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // Called when the user clicks the filter button
     // Handles applying a filter to the displayed tasks
     public void openFilters(View view) {
-        if (filterItems == null) {
+        // Refresh existing filters
+        ArrayList<String> filterList = getFilterList();
+
+        // Ensure the filterItems list is not null
+        if (filterItems == null)
             filterItems = new ArrayList<>();
-            filterItems.add(new FilterPowerMenuItem("Ungraded"));
-            filterItems.add(new FilterPowerMenuItem("Graded"));
-            filterItems.add(new FilterPowerMenuItem("COSC 310"));
-            filterItems.add(new FilterPowerMenuItem("Personal"));
+
+        // Make sure all the filters in the menu still exist
+        loop: for (int i = filterItems.size() - 1; i >= 0; i--) {
+            String tag = filterItems.get(i).getTitle();
+            for (String s : filterList)
+                if (tag.equals(s))
+                    continue loop;
+            filterItems.remove(i);
         }
-        CustomPowerMenu customPowerMenu = new CustomPowerMenu.Builder<>(this, new FilterMenuAdapter())
+
+        // Make sure all existing filters are in the menu
+        upperLoop: for (String s : filterList) {
+            for (FilterPowerMenuItem i : filterItems)
+                if (i.getTitle().equals(s))
+                    continue upperLoop;
+            filterItems.add(new FilterPowerMenuItem(s));
+        }
+        CustomPowerMenu<FilterPowerMenuItem, FilterMenuAdapter> customPowerMenu = new CustomPowerMenu.Builder<>(this, new FilterMenuAdapter())
                 .addItemList(filterItems)
                 .setAnimation(MenuAnimation.SHOWUP_TOP_RIGHT)
                 .setMenuRadius(10f)
                 .setMenuShadow(10f)
                 .build();
-        customPowerMenu.setOnDismissedListener(new OnDismissedListener() {
-            @Override
-            public void onDismissed() {
-                // When menu is closed, update the filter and reload list, which uses will apply the filter
-                for (FilterPowerMenuItem item : filterItems)
-                    filters.put(item.getTitle(), item.isChecked());
-                loadData();
-            }
+        customPowerMenu.setOnDismissedListener(() -> {
+            // When menu is closed, update the filter and reload list, which uses will apply the filter
+            for (FilterPowerMenuItem item : filterItems)
+                filters.put(item.getTitle(), item.isChecked());
+            loadData();
         });
         customPowerMenu.showAsDropDown(view); // view is where the menu is anchored
     }
