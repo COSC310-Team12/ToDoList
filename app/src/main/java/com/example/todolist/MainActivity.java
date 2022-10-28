@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private ToDoAdapter recyclerAdapter;
     private EditText inputToDo;
     private List<FilterPowerMenuItem> filterItems;
+    private ArrayList<String> filterList = new ArrayList<>();
     private final HashMap<String, Boolean> filters = new HashMap<>();
     private final static int EDIT_TODO_ACTIVITY_REQUEST = 1, ADD_TAGS_ACTIVITY_REQUEST = 2;
 
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         }
 
         // Apply the filter to each item to see if it should be displayed to the user
+        filterList = getFilterList();
         filtered = new ArrayList<>();
         for (ToDo toDo : toDoList)
             if (filterAllows(toDo))
@@ -107,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     // Generate the list of all filters from all saved tasks
     private ArrayList<String> getFilterList() {
-        loadData();
         ArrayList<String> out = new ArrayList<>();
         out.add("Graded");
         out.add("Ungraded");
@@ -138,6 +139,12 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     // Determines if the To Do item is allowed by the filter
     private boolean filterAllows(ToDo toDo) {
+        // Make sure any old filters are removed
+        for (String filter : filters.keySet()) {
+            if (!filterList.contains(filter))
+                filters.remove(filter);
+        }
+
         // If no filter is selected
         if (!filters.containsValue(true))
             return true;
@@ -329,9 +336,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // Called when the user clicks the filter button
     // Handles applying a filter to the displayed tasks
     public void openFilters(View view) {
-        // Refresh existing filters
-        ArrayList<String> filterList = getFilterList();
-
         // Ensure the filterItems list is not null
         if (filterItems == null)
             filterItems = new ArrayList<>();
