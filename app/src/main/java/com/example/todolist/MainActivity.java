@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 
 /*
@@ -140,7 +141,10 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // Determines if the To Do item is allowed by the filter
     private boolean filterAllows(ToDo toDo) {
         // Make sure any old filters are removed
-        for (String filter : filters.keySet()) {
+        Set<String> s = filters.keySet();
+        String[] keyArr = new String[s.size()];
+        keyArr = s.toArray(keyArr);
+        for (String filter : keyArr) {
             if (!filterList.contains(filter))
                 filters.remove(filter);
         }

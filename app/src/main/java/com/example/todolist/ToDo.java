@@ -61,6 +61,10 @@ public class ToDo implements Serializable {
         return true;
     }
 
+    public boolean removeTag(String tag) {
+        return tags.remove(tag);
+    }
+
     public ArrayList<String> getTags() {
         return tags;
     }

@@ -102,5 +102,7 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
     @Override
     public void onDeleteClick(View view, int position) {
         System.out.println("DELETE");
+        toDo.removeTag(toDo.getTags().get(position));
+        setAdapter();
     }
 }

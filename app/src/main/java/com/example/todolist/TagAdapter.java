@@ -59,7 +59,7 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.MyViewHolder> {
     }
 
     // inner class responsible for managing to-do items
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
         // can access views (checkbox and dots image) contained in to-do item in here
         private final TextView text;
         private final ImageButton button;
@@ -68,13 +68,6 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.MyViewHolder> {
             super(view);
             text = view.findViewById(R.id.tagName);
             button = view.findViewById(R.id.imageButton);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (tagClickListener != null)
-                tagClickListener.onDeleteClick(view, getAdapterPosition());
         }
     }
 }
