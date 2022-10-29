@@ -17,4 +17,10 @@
     <string name="mm_dd_yyyy">MM/DD/YYYY</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="add_tag">Add Tags</string>
+    <string name="tag_name">Tag Name</string>
+    <string name="name">Name</string>
+    <string name="done">Done</string>
+    <string name="add">Add</string>
+    <string name="tag_hint">New/Existing Tag</string>
 </resources>
