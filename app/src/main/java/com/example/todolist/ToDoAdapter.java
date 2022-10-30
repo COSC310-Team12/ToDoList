@@ -5,11 +5,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /*
 This class is responsible for displaying the content of our toDoList ArrayList in the RecyclerView.
@@ -43,7 +48,13 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ToDoAdapter.MyViewHolder holder, int position) {
         String toDoText = toDoList.get(position).getText();
+        Date toDoDate = toDoList.get(position).getDate();
+
+        String pattern = "MM-dd-yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
         holder.checkBox.setText(toDoText);
+        if (toDoDate != null) holder.dateView.setText("Due date: " + simpleDateFormat.format(toDoDate));
         holder.checkBox.setChecked(toDoList.get(position).isDone());
         holder.checkBox.setOnCheckedChangeListener((compoundButton, b) -> toDoClickListener.onCheckClick(compoundButton, holder.getAdapterPosition()));
     }
@@ -63,9 +74,11 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // can access views (checkbox and dots image) contained in to-do item in here
         private final CheckBox checkBox;
+        private final TextView dateView;
 
         public MyViewHolder(final View view) {
             super(view);
+            dateView = view.findViewById(R.id.dateView);
             checkBox = view.findViewById(R.id.checkBox);
             itemView.setOnClickListener(this);
         }
