@@ -192,7 +192,7 @@ public class EditToDo extends AppCompatActivity {
                     intent.putExtra("Notification", 0);
                     intent.putExtra("ToDoList", toDoList);
                     intent.putExtra("deletedToDo", toDo);
-                    setResult(RESULT_OK,intent);
+                    setResult(RESULT_OK, intent);
                     finish();
                 });
         alert.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
