@@ -23,4 +23,5 @@
     <string name="done">Done</string>
     <string name="add">Add</string>
     <string name="tag_hint">New/Existing Tag</string>
+    <string name="filters">Filters</string>
 </resources>

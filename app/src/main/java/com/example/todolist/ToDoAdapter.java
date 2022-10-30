@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +21,7 @@ https://www.youtube.com/watch?v=9rcrYFO1ogc&list=WL&index=2
 
 public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> {
 
-    private final ArrayList<ToDo> toDoList;
+    private ArrayList<ToDo> toDoList;
     private ToDoClickListener toDoClickListener;
 
     // constructor to initialize toDoList to values from toDoList in MainActivity
@@ -75,5 +74,11 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
             if (toDoClickListener != null)
                 toDoClickListener.onEditClick(view, getAdapterPosition());
         }
+    }
+
+    // used to only show todos returned from search
+    public void setSearchResults(ArrayList<ToDo> searchResults) {
+        this.toDoList = searchResults;
+        notifyDataSetChanged();
     }
 }
