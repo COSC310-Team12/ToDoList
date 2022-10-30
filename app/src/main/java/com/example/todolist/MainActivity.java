@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-
 /*
 This class controls the main screen. It extends our custom ToDoClickListener.
 */
@@ -195,5 +194,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     public void makeNotification(String msg) {
         Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), msg, Snackbar.LENGTH_LONG);
         sb.show();
+
     }
 }
