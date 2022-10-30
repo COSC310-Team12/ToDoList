@@ -58,10 +58,7 @@ public class EditToDo extends AppCompatActivity {
         toDo = toDoList.get(index);
 
         String activityTitle = toDo.getText();
-        if (activityTitle.length() > 25) {
-            activityTitle = activityTitle.substring(0, 25);
-            activityTitle += "...";
-        }
+        activityTitle = abbreviateIfTooLong(activityTitle);
 
         ((TextView) findViewById(R.id.addTagsTitle)).setText("Edit \"" + activityTitle + "\"");
 
@@ -89,7 +86,6 @@ public class EditToDo extends AppCompatActivity {
         name.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -100,7 +96,6 @@ public class EditToDo extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
             }
         });
 
@@ -108,7 +103,6 @@ public class EditToDo extends AppCompatActivity {
         date.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-
             }
 
             @Override
@@ -119,7 +113,6 @@ public class EditToDo extends AppCompatActivity {
                         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
                         sdf.setLenient(false);
                         newDate = sdf.parse(charSequence.toString());
-
                         // it is a valid date
                         validDate = true;
                         // make sure text field is regularly colored
@@ -127,10 +120,8 @@ public class EditToDo extends AppCompatActivity {
                     } catch (ParseException e) {
                         // invalid date
                         validDate = false;
-
                         // clear the Date stored if the user entered a valid date, then changed it to be invalid
                         newDate = null;
-
                         // only give the user the red box of judgement if they have entered a whole date
                         dueDateError(charSequence.toString().split("/").length > 2);
                     }
@@ -142,7 +133,6 @@ public class EditToDo extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
             }
         });
 
@@ -154,10 +144,17 @@ public class EditToDo extends AppCompatActivity {
         });
     }
 
+    public static String abbreviateIfTooLong(String activityTitle) {
+        if (activityTitle.length() > 25) {
+            activityTitle = activityTitle.substring(0, 25);
+            activityTitle += "...";
+        }
+        return activityTitle;
+    }
+
     // called by submit button
     public void submit(View view) {
         // set new name and date, if the user entered them
-
         String newName = Objects.requireNonNull(name.getText()).toString();
         if (!newName.equals(""))
             toDo.setText(newName);
@@ -166,7 +163,6 @@ public class EditToDo extends AppCompatActivity {
             makeNotification("Please enter a task name");
             return;
         }
-
         if (validDate) {
             toDo.setDate(newDate);
         } else {
@@ -174,7 +170,6 @@ public class EditToDo extends AppCompatActivity {
             makeNotification("Please enter a valid date");
             return;
         }
-
         goBack(view);
     }
 
@@ -191,9 +186,7 @@ public class EditToDo extends AppCompatActivity {
         alert.setPositiveButton("Yes",
                 (dialog, which) -> {
                     toDoList.remove(toDo);
-
                     dialog.dismiss();
-
                     Intent intent = new Intent(view.getContext(), MainActivity.class);
                     // notify main activity to show message
                     intent.putExtra("Notification", 0);
@@ -203,7 +196,6 @@ public class EditToDo extends AppCompatActivity {
                     finish();
                 });
         alert.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
-
         alert.show();
     }
 
