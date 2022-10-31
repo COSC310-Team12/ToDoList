@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -331,29 +332,32 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // called when users click the checkbox on a to-do
     @Override
     public void onCheckClick(View view, int position) {
-        // Check if it is check or unchecked to determine what action to take
-        // True means it's moving from uncompleted to complete
-        // False means it's moving from complete to uncompleted
-        boolean checked = ((CheckBox) view).isChecked();
-        
-        // Get the to do object that's been checked/unchecked
-        ToDo completedTask;
-        if (checked) {
-            completedTask = filtered.get(position);
-            // alert the user of their action if it's not
-            makeNotification("Completed \"" + completedTask.getText() + "\"");
-        } else {
-            completedTask = completed.get(position);
-            // alert the user of their action
-            makeNotification("Moved \"" + completedTask.getText() + "\" to uncompleted");
-        }
-        
-        completedTask.setDone(!completedTask.isDone());
+        // Code for delaying moving the task so that the checkbox animation finishes
+        new Handler().postDelayed(() -> {
+            // Check if it is check or unchecked to determine what action to take
+            // True means it's moving from uncompleted to complete
+            // False means it's moving from complete to uncompleted
+            boolean checked = ((CheckBox) view).isChecked();
 
-        // save changes
-        // load data again
-        save();
-        loadData();
+            // Get the to do object that's been checked/unchecked
+            ToDo completedTask;
+            if (checked) {
+                completedTask = filtered.get(position);
+                // alert the user of their action if it's not
+                makeNotification("Completed \"" + completedTask.getText() + "\"");
+            } else {
+                completedTask = completed.get(position);
+                // alert the user of their action
+                makeNotification("Moved \"" + completedTask.getText() + "\" to uncompleted");
+            }
+
+            completedTask.setDone(!completedTask.isDone());
+
+            // save changes
+            // load data again
+            save();
+            loadData();
+        },300);
     }
 
     public void makeNotification(String msg) {
