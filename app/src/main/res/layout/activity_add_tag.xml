@@ -49,8 +49,8 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="@string/tag_hint"
-            android:inputType="textShortMessage"
-            android:importantForAutofill="no" />
+            android:importantForAutofill="no"
+            android:inputType="textShortMessage" />
 
         <Button
             android:id="@+id/addButton"

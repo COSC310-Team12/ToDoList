@@ -5,7 +5,7 @@
     <string name="three_menu_dots">Three menu dots</string>
     <string name="checkbox">CheckBox</string>
     <string name="todo">TODO</string>
-    <string name="button_to_edit_to_do">Button to edit to-do</string>
+    <string name="button_to_edit_to_do">Three vertical dots</string>
     <string name="edit_to_do">Edit to-do:</string>
     <string name="edit_due_date">Edit due date:</string>
     <string name="add_notes">Add notes:</string>
@@ -23,4 +23,5 @@
     <string name="done">Done</string>
     <string name="add">Add</string>
     <string name="tag_hint">New/Existing Tag</string>
+    <string name="due_date_none">Due date: none</string>
 </resources>

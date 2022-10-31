@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import com.skydoves.powermenu.CustomPowerMenu;
 import com.skydoves.powermenu.MenuAnimation;
-import com.skydoves.powermenu.OnDismissedListener;
 import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 
@@ -115,7 +114,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         out.add("Ungraded");
         ArrayList<String> nonDefault = new ArrayList<>();
         for (ToDo toDo : toDoList) {
-            loop: for (String tag : toDo.getTags()) {
+            loop:
+            for (String tag : toDo.getTags()) {
                 for (String s : nonDefault)
                     if (s.equals(tag))
                         continue loop;
@@ -123,7 +123,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             }
         }
         for (ToDo toDo : completed) {
-            loop: for (String tag : toDo.getTags()) {
+            loop:
+            for (String tag : toDo.getTags()) {
                 for (String s : nonDefault)
                     if (s.equals(tag))
                         continue loop;
@@ -235,8 +236,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", position);
                 startActivityForResult(i, EDIT_TODO_ACTIVITY_REQUEST);
-            }
-            else if (item.getTitle().equals("Delete")) { // Delete item
+            } else if (item.getTitle().equals("Delete")) { // Delete item
                 ToDo deletedTodo = toDoList.get(position);
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle("Delete");
@@ -263,8 +263,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
                 alert.show();
 
-            }
-            else if (item.getTitle().equals("Edit Tags")) {
+            } else if (item.getTitle().equals("Edit Tags")) {
                 Intent i = new Intent(this, AddTagActivity.class);
                 // send toDoList so that we can edit it there, then reload it when returning to main activity
                 i.putExtra("ToDoList", toDoList);
@@ -345,7 +344,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             filterItems = new ArrayList<>();
 
         // Make sure all the filters in the menu still exist
-        loop: for (int i = filterItems.size() - 1; i >= 0; i--) {
+        loop:
+        for (int i = filterItems.size() - 1; i >= 0; i--) {
             String tag = filterItems.get(i).getTitle();
             for (String s : filterList)
                 if (tag.equals(s))
@@ -354,7 +354,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         }
 
         // Make sure all existing filters are in the menu
-        upperLoop: for (String s : filterList) {
+        upperLoop:
+        for (String s : filterList) {
             for (FilterPowerMenuItem i : filterItems)
                 if (i.getTitle().equals(s))
                     continue upperLoop;
