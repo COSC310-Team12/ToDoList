@@ -5,10 +5,13 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -46,8 +49,10 @@ This class controls the main screen. It extends our custom ToDoClickListener.
 public class MainActivity extends AppCompatActivity implements ToDoClickListener {
 
     private ArrayList<ToDo> toDoList, completed, filtered;
-    private RecyclerView recyclerView;
-    private ToDoAdapter recyclerAdapter;
+    private RecyclerView toDoRecyclerView, completedRecyclerView;
+    private ToDoAdapter toDoRecyclerAdapter;
+    private boolean showCompleted = false;
+    private ImageView dropdownIcon;
     private EditText inputToDo;
     private List<FilterPowerMenuItem> filterItems;
     private ArrayList<String> filterList = new ArrayList<>();
@@ -60,8 +65,12 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.recyclerView);
+        toDoRecyclerView = findViewById(R.id.toDoRecyclerView);
+        completedRecyclerView = findViewById(R.id.completedRecyclerView);
         inputToDo = findViewById(R.id.inputToDo);
+        dropdownIcon = findViewById(R.id.dropdownIcon);
+
+        completedRecyclerView.setVisibility(View.GONE);
         SearchView searchView = findViewById(R.id.searchView);
 
         searchView.clearFocus();
@@ -103,23 +112,34 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 throw new FileNotFoundException("Not loading from file for debug purposes. To change this behavior, change LOAD_FROM_FILE to true");
             // try loading from saved file
             toDoList = (ArrayList<ToDo>) in.readObject();
-            completed = (ArrayList<ToDo>) in.readObject();
         } catch (FileNotFoundException | ClassNotFoundException e) {
             // load defaults
             toDoList = new ArrayList<>();
-            completed = new ArrayList<>();
             // save new state
             save();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        // Make sure any old filters are removed
+        Set<String> s = filters.keySet();
+        String[] keyArr = new String[s.size()];
+        keyArr = s.toArray(keyArr);
+        for (String filter : keyArr) {
+            if (!filterList.contains(filter))
+                filters.remove(filter);
+        }
+
         // Apply the filter to each item to see if it should be displayed to the user
         filterList = getFilterList();
         filtered = new ArrayList<>();
-        for (ToDo toDo : toDoList)
-            if (filterAllows(toDo))
+        completed = new ArrayList<>();
+        for (ToDo toDo : toDoList) {
+            if (!toDo.isDone() && filterAllows(toDo))
                 filtered.add(toDo);
+            else if (toDo.isDone() && filterAllows(toDo))
+                completed.add(toDo);
+        }
 
         setAdapter();
     }
@@ -132,15 +152,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         ArrayList<String> nonDefault = new ArrayList<>();
         for (ToDo toDo : toDoList) {
             loop:
-            for (String tag : toDo.getTags()) {
-                for (String s : nonDefault)
-                    if (s.equals(tag))
-                        continue loop;
-                nonDefault.add(tag);
-            }
-        }
-        for (ToDo toDo : completed) {
-            loop:
+
             for (String tag : toDo.getTags()) {
                 for (String s : nonDefault)
                     if (s.equals(tag))
@@ -158,14 +170,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     // Determines if the To Do item is allowed by the filter
     private boolean filterAllows(ToDo toDo) {
-        // Make sure any old filters are removed
-        Set<String> s = filters.keySet();
-        String[] keyArr = new String[s.size()];
-        keyArr = s.toArray(keyArr);
-        for (String filter : keyArr) {
-            if (!filterList.contains(filter))
-                filters.remove(filter);
-        }
 
         // If no filter is selected
         if (!filters.containsValue(true))
@@ -185,7 +189,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         File file = new File(getFilesDir(), "savedToDos.dat");
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
             out.writeObject(toDoList);
-            out.writeObject(completed);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -198,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             // adding user input to-do to array list
             toDoList.add(new ToDo(inputToDo.getText().toString()));
             // need to call this so UI updates and newly added item is displayed
-            recyclerAdapter.notifyItemInserted(recyclerAdapter.getItemCount());
+            toDoRecyclerAdapter.notifyItemInserted(toDoRecyclerAdapter.getItemCount());
             // clearing user input after to-do is submitted
             inputToDo.getText().clear();
             // save changes
@@ -211,13 +214,22 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     }
 
     private void setAdapter() {
+        // Set adapter for uncompleted tasks
         // boiler-plate code
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        toDoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        toDoRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        recyclerAdapter = new ToDoAdapter(filtered); // Changed this to use `filtered` so that we only show the user items that match the filter
-        recyclerView.setAdapter(recyclerAdapter);
-        recyclerAdapter.setClickListener(this);
+        toDoRecyclerAdapter = new ToDoAdapter(filtered); // Changed this to use `filtered` so that we only show the user items that match the filter
+        toDoRecyclerView.setAdapter(toDoRecyclerAdapter);
+        toDoRecyclerAdapter.setClickListener(this);
+
+        // Set adapter for complete tasks
+        completedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        completedRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        ToDoAdapter completedRecyclerAdapter = new ToDoAdapter(completed); // Changed this to use `filtered` so that we only show the user items that match the filter
+        completedRecyclerView.setAdapter(completedRecyclerAdapter);
+        completedRecyclerAdapter.setClickListener(this);
     }
 
     // utility method
@@ -237,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         if (searchResults.isEmpty()) {
             Toast.makeText(this, "No results!", Toast.LENGTH_SHORT).show();
         } else {
-            recyclerAdapter.setSearchResults(searchResults);
+            toDoRecyclerAdapter.setSearchResults(searchResults);
         }
     }
 
@@ -245,6 +257,11 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // on three dots on to-do
     @Override
     public void onEditClick(View view, int position) {
+        // Determine if the clicked to do is in completed or toDoList
+        CheckBox checkBox = view.findViewById(R.id.checkBox);
+        boolean taskComplete = checkBox.isChecked();
+        ToDo clickedToDo = (taskComplete ? completed : filtered).get(position);
+
         ArrayList<PowerMenuItem> itemList = new ArrayList<>();
         itemList.add(new PowerMenuItem("Edit", false));
         itemList.add(new PowerMenuItem("Edit Tags", false));
@@ -261,22 +278,22 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 .setMenuColor(Color.WHITE)
                 .setSelectedMenuColor(ContextCompat.getColor(this, R.color.purple_500))
                 .build();
+        // Set what happens when each option is clicked
         powerMenu.setOnMenuItemClickListener((position1, item) -> {
             powerMenu.dismiss();
             if (item.getTitle().equals("Edit")) { // Edit item
                 Intent i = new Intent(this, EditToDo.class);
                 // send toDoList so that we can edit it there, then reload it when returning to main activity
                 i.putExtra("ToDoList", toDoList);
-                i.putExtra("Index", position);
+                i.putExtra("Index", toDoList.indexOf(clickedToDo));
                 startActivityForResult(i, EDIT_TODO_ACTIVITY_REQUEST);
             } else if (item.getTitle().equals("Delete")) { // Delete item
-                ToDo deletedTodo = toDoList.get(position);
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle("Delete");
                 alert.setMessage("Are you sure you want to delete?");
                 alert.setPositiveButton("Yes",
                         (dialog, which) -> {
-                            toDoList.remove(deletedTodo);
+                            toDoList.remove(clickedToDo);
 
                             dialog.dismiss();
 
@@ -286,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                             Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Task deleted", Snackbar.LENGTH_LONG);
                             sb.setAction("UNDO", view1 -> {
                                 // undo delete
-                                toDoList.add(deletedTodo);
+                                toDoList.add(clickedToDo);
                                 save();
                                 loadData();
                             });
@@ -300,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 Intent i = new Intent(this, AddTagActivity.class);
                 // send toDoList so that we can edit it there, then reload it when returning to main activity
                 i.putExtra("ToDoList", toDoList);
-                i.putExtra("Index", position);
+                i.putExtra("Index", toDoList.indexOf(clickedToDo));
                 startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
             }
         });
@@ -349,19 +366,32 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // called when users click the checkbox on a to-do
     @Override
     public void onCheckClick(View view, int position) {
-        // move completed task to the completed list
-        ToDo completedTask = toDoList.remove(position);
-        completedTask.setDone(!completedTask.isDone());
-        completed.add(completedTask);
+        // Code for delaying moving the task so that the checkbox animation finishes
+        new Handler().postDelayed(() -> {
+            // Check if it is check or unchecked to determine what action to take
+            // True means it's moving from uncompleted to complete
+            // False means it's moving from complete to uncompleted
+            boolean checked = ((CheckBox) view).isChecked();
 
-        // save changes
-        save();
+            // Get the to do object that's been checked/unchecked
+            ToDo completedTask;
+            if (checked) {
+                completedTask = filtered.get(position);
+                // alert the user of their action if it's not
+                makeNotification("Completed \"" + completedTask.getText() + "\"");
+            } else {
+                completedTask = completed.get(position);
+                // alert the user of their action
+                makeNotification("Moved \"" + completedTask.getText() + "\" to uncompleted");
+            }
 
-        // load data again
-        loadData();
+            completedTask.setDone(!completedTask.isDone());
 
-        // alert the user of their action
-        makeNotification("Completed \"" + completedTask.getText() + "\"");
+            // save changes
+            // load data again
+            save();
+            loadData();
+        },300);
     }
 
     public void makeNotification(String msg) {
@@ -407,5 +437,12 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             loadData();
         });
         customPowerMenu.showAsDropDown(view); // view is where the menu is anchored
+    }
+
+    public void showCompleted(View view) {
+        showCompleted = !showCompleted;
+
+        dropdownIcon.setImageResource(showCompleted ? R.drawable.dropdown_down : R.drawable.dropdown_right);
+        completedRecyclerView.setVisibility(showCompleted ? View.VISIBLE : View.GONE);
     }
 }

@@ -42,7 +42,7 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         tagNameEditText = findViewById(R.id.editTextTagName);
         Button addButton = findViewById(R.id.addButton);
         Button doneButton = findViewById(R.id.doneButton);
-        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.toDoRecyclerView);
         TextView activityTitle1 = findViewById(R.id.addTagsTitle);
         snackbarPlaceholder = findViewById(R.id.myCoordinatorLayout);
 
@@ -86,10 +86,10 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
                 toDo.addTag(tag);
                 setAdapter();
             } else {
-                Snackbar.make(snackbarPlaceholder,"Tag is already on task",Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(snackbarPlaceholder, "Tag is already on task", Snackbar.LENGTH_SHORT).show();
             }
         } else {
-            Snackbar.make(snackbarPlaceholder,"Please enter a tag name",Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(snackbarPlaceholder, "Please enter a tag name", Snackbar.LENGTH_SHORT).show();
         }
     }
 
