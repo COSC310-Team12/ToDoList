@@ -217,7 +217,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         ArrayList<PowerMenuItem> list=new ArrayList<>();
         list.add(new PowerMenuItem("Ascending",false));
         list.add(new PowerMenuItem("Descending",false));
-        OnMenuItemClickListener<PowerMenuItem> onMenuItemClickListener;
         PowerMenu powerMenu = new PowerMenu.Builder(this)
                 .addItemList(list) // list has "Novel", "Poetry", "Art"
                 .setAnimation(MenuAnimation.SHOWUP_TOP_LEFT) // Animation start point (TOP | LEFT).
@@ -228,18 +227,18 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
                 .setSelectedTextColor(Color.WHITE)
                 .setMenuColor(Color.WHITE)
-                .setSelectedMenuColor(ContextCompat.getColor(this, R.color.purple_500))
-                .setOnMenuItemClickListener(new OnMenuItemClickListener<PowerMenuItem>() {
+                .setSelectedMenuColor(ContextCompat.getColor(this, R.color.purple_500)).build();
+                powerMenu.setOnMenuItemClickListener(new OnMenuItemClickListener<PowerMenuItem>() {
                     @Override
                     public void onItemClick(int position, PowerMenuItem item) {
+                        powerMenu.dismiss();
                         if(position==0)
                             sortingType = 0;
                         if (position==1)
                             sortingType = 1;
                         loadData();
                     }
-                })
-                .build();
+                });
         powerMenu.showAsDropDown(view);
 
     }
