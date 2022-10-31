@@ -42,7 +42,7 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         tagNameEditText = findViewById(R.id.editTextTagName);
         Button addButton = findViewById(R.id.addButton);
         Button doneButton = findViewById(R.id.doneButton);
-        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.toDoRecyclerView);
         TextView activityTitle1 = findViewById(R.id.addTagsTitle);
         snackbarPlaceholder = findViewById(R.id.myCoordinatorLayout);
 
