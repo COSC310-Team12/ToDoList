@@ -52,7 +52,8 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, Locale.US);
 
         holder.checkBox.setText(toDoText);
-        if (toDoDate != null) holder.dateView.setText(String.join("","Due date: ", simpleDateFormat.format(toDoDate)));
+        if (toDoDate != null)
+            holder.dateView.setText(String.join("", "Due date: ", simpleDateFormat.format(toDoDate)));
         holder.checkBox.setChecked(toDoList.get(position).isDone());
         holder.checkBox.setOnCheckedChangeListener((compoundButton, b) -> toDoClickListener.onCheckClick(compoundButton, holder.getAdapterPosition()));
     }

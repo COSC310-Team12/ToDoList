@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -251,8 +250,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 completedSearchResults.add(todo);
             }
         }
-
-        if (toDoSearchResults.isEmpty() && completedSearchResults.isEmpty()) Toast.makeText(this, "No results!", Toast.LENGTH_SHORT).show();
         toDoRecyclerAdapter.setSearchResults(toDoSearchResults);
         completedRecyclerAdapter.setSearchResults(completedSearchResults);
     }
@@ -395,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             // load data again
             save();
             loadData();
-        },300);
+        }, 300);
     }
 
     public void makeNotification(String msg) {
