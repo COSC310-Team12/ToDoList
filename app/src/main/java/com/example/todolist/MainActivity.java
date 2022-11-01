@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     private ArrayList<ToDo> toDoList, completed, filtered;
     private RecyclerView toDoRecyclerView, completedRecyclerView;
-    private ToDoAdapter toDoRecyclerAdapter;
+    private ToDoAdapter toDoRecyclerAdapter, completedRecyclerAdapter;
     private boolean showCompleted = false;
     private ImageView dropdownIcon;
     private EditText inputToDo;
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         completedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         completedRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        ToDoAdapter completedRecyclerAdapter = new ToDoAdapter(completed); // Changed this to use `filtered` so that we only show the user items that match the filter
+        completedRecyclerAdapter = new ToDoAdapter(completed);
         completedRecyclerView.setAdapter(completedRecyclerAdapter);
         completedRecyclerAdapter.setClickListener(this);
     }
@@ -239,18 +239,22 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     // method creates a new array list according to user search and calls recyclerAdapter to update data
     private void searchToDos(String text) {
-        ArrayList<ToDo> searchResults = new ArrayList<>();
-        for (ToDo todo : toDoList) {
+        ArrayList<ToDo> toDoSearchResults = new ArrayList<>();
+        ArrayList<ToDo> completedSearchResults = new ArrayList<>();
+        for (ToDo todo : filtered) {
             if (todo.getText().toLowerCase().contains(text.toLowerCase())) {
-                searchResults.add(todo);
+                toDoSearchResults.add(todo);
+            }
+        }
+        for (ToDo todo : completed) {
+            if (todo.getText().toLowerCase().contains(text.toLowerCase())) {
+                completedSearchResults.add(todo);
             }
         }
 
-        if (searchResults.isEmpty()) {
-            Toast.makeText(this, "No results!", Toast.LENGTH_SHORT).show();
-        } else {
-            toDoRecyclerAdapter.setSearchResults(searchResults);
-        }
+        if (toDoSearchResults.isEmpty() && completedSearchResults.isEmpty()) Toast.makeText(this, "No results!", Toast.LENGTH_SHORT).show();
+        toDoRecyclerAdapter.setSearchResults(toDoSearchResults);
+        completedRecyclerAdapter.setSearchResults(completedSearchResults);
     }
 
     // bound to the RecyclerView elements (individual to-dos), called when user clicks
