@@ -6,12 +6,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /*
 This is a serializable class to store information about to-dos.
 */
 
 public class ToDo implements Serializable {
+    private final UUID uuid = UUID.randomUUID(); // Implementation recommended by https://www.baeldung.com/java-uuid
     private String text;
     private boolean done;
     private Date date;
@@ -78,6 +81,11 @@ public class ToDo implements Serializable {
                 ", date=" + date +
                 ", tags=" + tags +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return getClass() == o.getClass() && uuid.equals(((ToDo) o).uuid);
     }
 }
 

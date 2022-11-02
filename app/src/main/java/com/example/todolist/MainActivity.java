@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     private ArrayList<ToDo> toDoList, completed, filtered;
     private RecyclerView toDoRecyclerView, completedRecyclerView;
-    private ToDoAdapter toDoRecyclerAdapter;
     private boolean showCompleted = false;
     private ImageView dropdownIcon;
     private EditText inputToDo;
@@ -180,15 +179,16 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     public void createToDo(View v) {
         // only allow user to add to-do if they entered text
         if (!isEmpty(inputToDo)) {
+            ToDo newToDo = new ToDo(inputToDo.getText().toString());
             // adding user input to-do to array list
-            toDoList.add(new ToDo(inputToDo.getText().toString()));
-            // need to call this so UI updates and newly added item is displayed
-            toDoRecyclerAdapter.notifyItemInserted(toDoRecyclerAdapter.getItemCount());
+            toDoList.add(newToDo);
             // clearing user input after to-do is submitted
             inputToDo.getText().clear();
             // save changes
             save();
             loadData();
+            // Scroll to new item
+            toDoRecyclerView.scrollToPosition(indexOf(filtered,newToDo)); // get index in case sorting doesn't put it at the bottom
         } else {
             // ask the user to enter a name for the task
             Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name", Snackbar.LENGTH_LONG).show();
@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         toDoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         toDoRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        toDoRecyclerAdapter = new ToDoAdapter(filtered); // Changed this to use `filtered` so that we only show the user items that match the filter
+        ToDoAdapter toDoRecyclerAdapter = new ToDoAdapter(filtered); // Changed this to use `filtered` so that we only show the user items that match the filter
         toDoRecyclerView.setAdapter(toDoRecyclerAdapter);
         toDoRecyclerAdapter.setClickListener(this);
 
@@ -217,6 +217,14 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // utility method
     private boolean isEmpty(EditText editText) {
         return editText.getText().toString().trim().length() == 0;
+    }
+
+    // indexOf method that uses .equals() instead of ==
+    private int indexOf(ArrayList<ToDo> list, ToDo toDo) {
+        for (int i = 0; i < list.size(); i++)
+            if (list.get(i).equals(toDo))
+                return i;
+        return -1;
     }
 
     // bound to the RecyclerView elements (individual to-dos), called when user clicks
