@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     private ArrayList<ToDo> toDoList, completed, filtered;
     private RecyclerView toDoRecyclerView, completedRecyclerView;
-    private boolean showCompleted = false;
-    private ImageView dropdownIcon;
+    private boolean showCompleted = false, showIncomplete = true;
+    private ImageView dropdownIcon, dropdownIcon2;
     private EditText inputToDo;
     private List<FilterPowerMenuItem> filterItems;
     private ArrayList<String> filterList = new ArrayList<>();
@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         completedRecyclerView = findViewById(R.id.completedRecyclerView);
         inputToDo = findViewById(R.id.inputToDo);
         dropdownIcon = findViewById(R.id.dropdownIcon);
+        dropdownIcon2 = findViewById(R.id.dropdownIcon2);
 
         completedRecyclerView.setVisibility(View.GONE);
 
@@ -440,9 +441,15 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     }
 
     public void showCompleted(View view) {
-        showCompleted = !showCompleted;
+        if (view.getId() == R.id.showCompletedButton || view.getId() == R.id.dropdownIcon) {
+            showCompleted = !showCompleted;
 
-        dropdownIcon.setImageResource(showCompleted ? R.drawable.dropdown_down : R.drawable.dropdown_right);
-        completedRecyclerView.setVisibility(showCompleted ? View.VISIBLE : View.GONE);
+            dropdownIcon.setImageResource(showCompleted ? R.drawable.dropdown_down : R.drawable.dropdown_right);
+            completedRecyclerView.setVisibility(showCompleted ? View.VISIBLE : View.GONE);
+        } else if (view.getId() == R.id.showIncomplete || view.getId() == R.id.dropdownIcon2) {
+            showIncomplete = !showIncomplete;
+            dropdownIcon2.setImageResource(showIncomplete ? R.drawable.dropdown_down : R.drawable.dropdown_right);
+            toDoRecyclerView.setVisibility(showIncomplete ? View.VISIBLE : View.GONE);
+        }
     }
 }
