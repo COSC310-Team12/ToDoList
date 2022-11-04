@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private ArrayList<String> filterList = new ArrayList<>();
     private final HashMap<String, Boolean> filters = new HashMap<>();
     private final static int EDIT_TODO_ACTIVITY_REQUEST = 1, ADD_TAGS_ACTIVITY_REQUEST = 2;
+    private int newestCreatedToDo = -1;
 
     // initialization code
     @Override
@@ -187,8 +190,10 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             // save changes
             save();
             loadData();
+            // Get the position of the new to-do
+            newestCreatedToDo = indexOf(filtered, newToDo); // get index in case sorting doesn't put it at the bottom
             // Scroll to new item
-            toDoRecyclerView.scrollToPosition(indexOf(filtered,newToDo)); // get index in case sorting doesn't put it at the bottom
+            toDoRecyclerView.scrollToPosition(newestCreatedToDo);
         } else {
             // ask the user to enter a name for the task
             Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name", Snackbar.LENGTH_LONG).show();
@@ -365,7 +370,28 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             // load data again
             save();
             loadData();
-        },300);
+        }, 300);
+    }
+
+    // Called after each ViewHolder is initialized in the onBindViewHolder method in ToDoAdapter
+    public void onCreated(ToDoAdapter.MyViewHolder holder, int position) {
+        // When a viewholder is created, check if it needs to be highlighted
+        if (position != -1 && position == newestCreatedToDo) {
+            // Creating an array of two colors
+            ColorDrawable[] colors = new ColorDrawable[]{new ColorDrawable(Color.WHITE), new ColorDrawable(Color.parseColor("#cfcfcf"))};
+
+            // When button is clicked, A transition is created
+            // and applied to the background with specified duration
+            TransitionDrawable transition = new TransitionDrawable(colors);
+            holder.itemView.setBackground(transition);
+            int duration = 200;
+            transition.startTransition(duration);
+            // After the transition is completed, reverse it
+            new Handler().postDelayed(() -> transition.reverseTransition(duration), duration);
+
+            // Reset the newestCreatedToDo variable to -1 so that it doesn't keep highlighting
+            newestCreatedToDo = -1;
+        }
     }
 
     public void makeNotification(String msg) {
