@@ -452,4 +452,9 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             toDoRecyclerView.setVisibility(showIncomplete ? View.VISIBLE : View.GONE);
         }
     }
+
+    public void scrollToTop(View view) {
+        toDoRecyclerView.smoothScrollToPosition(0);
+        completedRecyclerView.smoothScrollToPosition(0);
+    }
 }
