@@ -88,10 +88,4 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
                 toDoClickListener.onEditClick(view, getAdapterPosition());
         }
     }
-
-    // used to only show todos returned from search
-    public void setSearchResults(ArrayList<ToDo> searchResults) {
-        this.toDoList = searchResults;
-        notifyDataSetChanged();
-    }
 }
