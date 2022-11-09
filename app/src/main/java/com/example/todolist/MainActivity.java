@@ -1,12 +1,20 @@
 package com.example.todolist;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,6 +29,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.concurrent.ExecutorService;
 /*
 This class controls the main screen. It extends our custom ToDoClickListener.
 */
@@ -31,12 +41,31 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private RecyclerView recyclerView;
     private ToDoAdapter recyclerAdapter;
     private EditText inputToDo;
+    NotificationManagerCompat notificationManagerCompat;
+    android.app.Notification notification;
 
     // initialization code
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Creates the notification channel that can be toggled on in the app info settings - Default is off.
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            NotificationChannel channel = new NotificationChannel("NotifyLate", "Late Task Notification", NotificationManager.IMPORTANCE_HIGH);
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+        //This creates the notification - this is hard coded for now. Just to show & test
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this, "NotifyLate")
+                        .setSmallIcon(R.drawable.notificationbell)
+                        .setContentTitle("Late Task!")
+                        .setContentText("You have a task that is past due!");
+        notification = builder.build();
+        notificationManagerCompat = NotificationManagerCompat.from(this);
 
         recyclerView = findViewById(R.id.recyclerView);
         inputToDo = findViewById(R.id.inputToDo);
@@ -196,4 +225,22 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         sb.show();
 
     }
+
+    public void sendMail(View v) {
+        //this line sends the notification - currently coded to a button
+        notificationManagerCompat.notify(1,notification);
+        //This currently isnt working & I havent included the files this commit
+
+//        Notification mail = new  Notification();
+//            //Hard coded for now - in future can use .getText().toString with user input
+//            System.out.println("Before Sending email");
+//            GMailSender sender = new GMailSender("cosc310team12@gmail.com", "Cosc310_Team12!");
+//                    try{
+//                        sender.sendMail("You have a late task!","Warning task 2 is now late!","cosc310team12@gmail.com","gauthier34@hotmail.com");
+//                        System.out.println("After");
+//                    }catch (Exception e){
+//                        Log.e("SendMail", e.getMessage(), e);
+//                    }
+    }
+
 }
