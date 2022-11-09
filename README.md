@@ -4,7 +4,7 @@
 This is the repository for our COSC310 project. We are creating an Android to-do list app for students.
 
 ## Class structure
-All layout code is stored in the layout folder as three xml files.
+All layout code is stored in the layout folder as six xml files.
 - activity_main.xml contains the layout for our main screen, including a RecyclerView for to-do items
 - todo_item.xml is the layout of an individual to-do item, which are used to populate the RecyclerView
 - activity_edit_todo.xml contains the layout for the edit to-do page that users can reach through the context menu after clicking on a to-do
