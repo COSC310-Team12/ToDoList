@@ -15,6 +15,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,10 +49,11 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     private ArrayList<ToDo> toDoList, completed, filtered;
     private RecyclerView toDoRecyclerView, completedRecyclerView;
-    private ToDoAdapter toDoRecyclerAdapter;
+    private ToDoAdapter toDoRecyclerAdapter, completedRecyclerAdapter;
     private boolean showCompleted = false;
     private ImageView dropdownIcon;
     private EditText inputToDo;
+    private SearchView searchView;
     private List<FilterPowerMenuItem> filterItems;
     private ArrayList<String> filterList = new ArrayList<>();
     private final HashMap<String, Boolean> filters = new HashMap<>();
@@ -69,6 +71,21 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         dropdownIcon = findViewById(R.id.dropdownIcon);
 
         completedRecyclerView.setVisibility(View.GONE);
+        searchView = findViewById(R.id.searchView);
+
+        searchView.clearFocus();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchToDos(newText);
+                return true;
+            }
+        });
 
         Button submitButton = findViewById(R.id.submitButton);
 
@@ -135,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         ArrayList<String> nonDefault = new ArrayList<>();
         for (ToDo toDo : toDoList) {
             loop:
+
             for (String tag : toDo.getTags()) {
                 for (String s : nonDefault)
                     if (s.equals(tag))
@@ -209,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         completedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         completedRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        ToDoAdapter completedRecyclerAdapter = new ToDoAdapter(completed); // Changed this to use `filtered` so that we only show the user items that match the filter
+        completedRecyclerAdapter = new ToDoAdapter(completed);
         completedRecyclerView.setAdapter(completedRecyclerAdapter);
         completedRecyclerAdapter.setClickListener(this);
     }
@@ -217,6 +235,30 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // utility method
     private boolean isEmpty(EditText editText) {
         return editText.getText().toString().trim().length() == 0;
+    }
+
+    // method creates a new array list according to user search and calls recyclerAdapter to update data
+    private void searchToDos(String text) {
+        if (!text.equals("")) {
+            ArrayList<ToDo> toDoSearchResults = new ArrayList<>();
+            ArrayList<ToDo> completedSearchResults = new ArrayList<>();
+            for (ToDo todo : filtered) {
+                if (todo.getText().toLowerCase().contains(text.toLowerCase())) {
+                    toDoSearchResults.add(todo);
+                }
+            }
+            filtered = toDoSearchResults;
+            for (ToDo todo : completed) {
+                if (todo.getText().toLowerCase().contains(text.toLowerCase())) {
+                    completedSearchResults.add(todo);
+                }
+            }
+            completed = completedSearchResults;
+
+            setAdapter();
+        } else {
+            loadData();
+        }
     }
 
     // bound to the RecyclerView elements (individual to-dos), called when user clicks
@@ -357,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             // load data again
             save();
             loadData();
-        },300);
+        }, 300);
     }
 
     public void makeNotification(String msg) {
@@ -401,6 +443,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             for (FilterPowerMenuItem item : filterItems)
                 filters.put(item.getTitle(), item.isChecked());
             loadData();
+            searchToDos(searchView.getQuery().toString());
         });
         customPowerMenu.showAsDropDown(view); // view is where the menu is anchored
     }
