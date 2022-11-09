@@ -18,7 +18,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
-public class AddTagActivity extends AppCompatActivity implements TagClickListener {
+public class EditTagActivity extends AppCompatActivity implements TagClickListener {
     private EditText tagNameEditText;
     private RecyclerView recyclerView;
     private ArrayList<ToDo> toDoList;

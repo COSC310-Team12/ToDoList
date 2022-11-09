@@ -9,23 +9,23 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class EditToDoUnitTest {
+public class EditToDoActivityUnitTest {
 
     @Test
     public void abbreviatesLongString() {
-        assertEquals(EditToDo.abbreviateIfTooLong("ThisIsAStringThatIs35CharactersLong"),
+        assertEquals(EditToDoActivity.abbreviateIfTooLong("ThisIsAStringThatIs35CharactersLong"),
                 "ThisIsAStringThatIs35Char...");
         // edge case
-        assertEquals(EditToDo.abbreviateIfTooLong("HereAre26CharactersExactly"),
+        assertEquals(EditToDoActivity.abbreviateIfTooLong("HereAre26CharactersExactly"),
                 "HereAre26CharactersExactl...");
     }
 
     @Test
     public void doesNotAbbreviateShortString() {
-        assertEquals(EditToDo.abbreviateIfTooLong("1"),
+        assertEquals(EditToDoActivity.abbreviateIfTooLong("1"),
                 "1");
         // edge case
-        assertEquals(EditToDo.abbreviateIfTooLong("HereIs25CharactersExactly"),
+        assertEquals(EditToDoActivity.abbreviateIfTooLong("HereIs25CharactersExactly"),
                 "HereIs25CharactersExactly");
     }
 }

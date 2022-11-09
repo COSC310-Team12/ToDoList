@@ -32,7 +32,7 @@ Error checking is performed for both of those operations. Once the user is done,
 they can return to the main page.
 */
 
-public class EditToDo extends AppCompatActivity {
+public class EditToDoActivity extends AppCompatActivity {
     TextInputEditText name, date;
     TextInputLayout dueDateBox, nameBox;
     ToDo toDo;

@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     private ArrayList<ToDo> toDoList, completed, filtered;
     private RecyclerView toDoRecyclerView, completedRecyclerView;
-    private ToDoAdapter toDoRecyclerAdapter, completedRecyclerAdapter;
+    private ToDoAdapter toDoRecyclerAdapter;
     private boolean showCompleted = false;
     private ImageView dropdownIcon;
     private EditText inputToDo;
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         completedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         completedRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        completedRecyclerAdapter = new ToDoAdapter(completed);
+        ToDoAdapter completedRecyclerAdapter = new ToDoAdapter(completed);
         completedRecyclerView.setAdapter(completedRecyclerAdapter);
         completedRecyclerAdapter.setClickListener(this);
     }
@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         powerMenu.setOnMenuItemClickListener((position1, item) -> {
             powerMenu.dismiss();
             if (item.getTitle().equals("Edit")) { // Edit item
-                Intent i = new Intent(this, EditToDo.class);
+                Intent i = new Intent(this, EditToDoActivity.class);
                 // send toDoList so that we can edit it there, then reload it when returning to main activity
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 alert.show();
 
             } else if (item.getTitle().equals("Edit Tags")) {
-                Intent i = new Intent(this, AddTagActivity.class);
+                Intent i = new Intent(this, EditTagActivity.class);
                 // send toDoList so that we can edit it there, then reload it when returning to main activity
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
