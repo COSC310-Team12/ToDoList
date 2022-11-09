@@ -54,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private boolean showCompleted = false, showIncomplete = true;
     private ImageView dropdownIcon, dropdownIcon2;
     private ToDoAdapter toDoRecyclerAdapter, completedRecyclerAdapter;
-    private boolean showCompleted = false;
-    private ImageView dropdownIcon;
     private EditText inputToDo;
     private SearchView searchView;
     private List<FilterPowerMenuItem> filterItems;
