@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private RecyclerView toDoRecyclerView, completedRecyclerView;
     private boolean showCompleted = false, showIncomplete = true;
     private ImageView dropdownIcon, dropdownIcon2;
-    private ToDoAdapter toDoRecyclerAdapter, completedRecyclerAdapter;
     private EditText inputToDo;
     private SearchView searchView;
     private List<FilterPowerMenuItem> filterItems;
@@ -207,9 +206,17 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             toDoList.add(newToDo);
             // clearing user input after to-do is submitted
             inputToDo.getText().clear();
+            // Clear search
+            searchView.setQuery("",true);
+            // Clear filters
+            for (String key : filters.keySet())
+                filters.put(key,false);
             // save changes
             save();
             loadData();
+            // Make sure incomplete tasks list is open, not completed tasks
+            if (!showIncomplete)
+                showCompleted(findViewById(R.id.showIncomplete));
             // Get the position of the new to-do
             newestCreatedToDo = indexOf(filtered, newToDo); // get index in case sorting doesn't put it at the bottom
             // Scroll to new item
@@ -234,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         completedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         completedRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        completedRecyclerAdapter = new ToDoAdapter(completed);
+        ToDoAdapter completedRecyclerAdapter = new ToDoAdapter(completed);
         completedRecyclerView.setAdapter(completedRecyclerAdapter);
         completedRecyclerAdapter.setClickListener(this);
     }
@@ -418,7 +425,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     }
 
     // Called after each ViewHolder is initialized in the onBindViewHolder method in ToDoAdapter
-    public void onCreated(ToDoAdapter.MyViewHolder holder, int position) {
+    public void onTaskCreated(ToDoAdapter.MyViewHolder holder, int position) {
         // When a viewholder is created, check if it needs to be highlighted
         if (position != -1 && position == newestCreatedToDo) {
             // Creating an array of two colors
@@ -446,28 +453,14 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // Called when the user clicks the filter button
     // Handles applying a filter to the displayed tasks
     public void openFilters(View view) {
-        // Ensure the filterItems list is not null
-        if (filterItems == null)
-            filterItems = new ArrayList<>();
-
-        // Make sure all the filters in the menu still exist
-        loop:
-        for (int i = filterItems.size() - 1; i >= 0; i--) {
-            String tag = filterItems.get(i).getTitle();
-            for (String s : filterList)
-                if (tag.equals(s))
-                    continue loop;
-            filterItems.remove(i);
+        // Load in filterItems
+        filterItems = new ArrayList<>();
+        for (String tag : filterList) {
+            if (!filters.containsKey(tag))
+                filters.put(tag,false);
+            filterItems.add(new FilterPowerMenuItem(tag, filters.get(tag)));
         }
 
-        // Make sure all existing filters are in the menu
-        upperLoop:
-        for (String s : filterList) {
-            for (FilterPowerMenuItem i : filterItems)
-                if (i.getTitle().equals(s))
-                    continue upperLoop;
-            filterItems.add(new FilterPowerMenuItem(s));
-        }
         CustomPowerMenu<FilterPowerMenuItem, FilterMenuAdapter> customPowerMenu = new CustomPowerMenu.Builder<>(this, new FilterMenuAdapter())
                 .addItemList(filterItems)
                 .setAnimation(MenuAnimation.SHOWUP_TOP_RIGHT)
@@ -484,10 +477,10 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         customPowerMenu.showAsDropDown(view); // view is where the menu is anchored
     }
 
+    // Called when the user expands or collapses either the incomplete or completed list
     public void showCompleted(View view) {
         if (view.getId() == R.id.showCompletedButton || view.getId() == R.id.dropdownIcon) {
             showCompleted = !showCompleted;
-
             dropdownIcon.setImageResource(showCompleted ? R.drawable.dropdown_down : R.drawable.dropdown_right);
             completedRecyclerView.setVisibility(showCompleted ? View.VISIBLE : View.GONE);
         } else if (view.getId() == R.id.showIncomplete || view.getId() == R.id.dropdownIcon2) {

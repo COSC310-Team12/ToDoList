@@ -11,5 +11,5 @@ public interface ToDoClickListener {
 
     void onCheckClick(View view, int position);
 
-    void onCreated(ToDoAdapter.MyViewHolder holder, int position);
+    void onTaskCreated(ToDoAdapter.MyViewHolder holder, int position);
 }

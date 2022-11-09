@@ -25,7 +25,7 @@ https://www.youtube.com/watch?v=9rcrYFO1ogc&list=WL&index=2
 
 public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> {
 
-    private ArrayList<ToDo> toDoList;
+    private final ArrayList<ToDo> toDoList;
     private ToDoClickListener toDoClickListener;
 
     // constructor to initialize toDoList to values from toDoList in MainActivity
@@ -91,7 +91,7 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
         }
 
         public void onCreated() {
-            toDoClickListener.onCreated(this, getAdapterPosition());
+            toDoClickListener.onTaskCreated(this, getAdapterPosition());
         }
     }
 }
