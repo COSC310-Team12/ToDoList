@@ -50,29 +50,36 @@ Since our system already had a GUI, we made improvements to the existing GUI.
 
 Made to-do's searchable
 - users can search for tasks by name. This helps users find tasks more easily.
+<img src="https://user-images.githubusercontent.com/77898527/200717087-9fd058f9-d2d8-4784-ab4d-d55fc04206fd.png" alt="searchTasks" width="100"/>
 
 Added filtering by tags
 - users can sort tasks based on tags. This feature helps users organize their tasks.
+<img src="https://user-images.githubusercontent.com/77898527/200717120-6b2f2f3e-4b08-4d8b-b7b9-7c01065b5a02.png" alt="filteringByTags" width="100"/>
 
 Improved goBack()
 - refactored the method to improve performance (a previous limitation). This fix improves performance and long-term stability.
 
 Show due date on main page
 - users can now see the due dates they add on the main page. This feature makes the app easier to use, users can see the due date on the main page instead of having to click on the task now.
+<img src="https://user-images.githubusercontent.com/77898527/200717154-85eb8992-f97d-4f5e-9f8c-692e3994d65a.png" alt="displayDueDate" width="100"/>
 
 ### Features that use open-source libraries to improve the functionality of the system
 
 Added tags
 - users can now classify their tasks using tags. Tags are implemented using, among others the AndroidX Library. Tags improve our system because they give the user the option to categorize their tasks.
+<img src="https://user-images.githubusercontent.com/77898527/200717171-08738099-3592-425b-9bb1-6eaeb21d4fd5.png" alt="addTags" width="100"/>
 
 Completed tasks are viewable
 - now displaying completed tasks using a RecyclerView (from AndroidX Library). This feature is a major improvement, because it allows users to reference previously completed tasks. Previously, tasks just became invisible to the user upon completion.
+<img src="https://user-images.githubusercontent.com/77898527/200717214-a077b894-7877-4953-9e43-907a2344fec9.png" alt="viewCompleted" width="100"/>
 
 Added searchbar
 - used the AndroidX library to implement a search bar. This feature improves the UI and laid the groundwork for allowing users to search tasks.
+<img src="https://user-images.githubusercontent.com/77898527/200718290-6a5d66d3-c027-40a8-a840-d6802d47224d.png" alt="searchBar" width="100"/>
 
 Added context menu
 - used the Skydoves open-source library to add a context menu when the user clicks the three dots on a task. This feature improves the effectiveness of our app by reducing the number of steps users have to complete to perform common tasks.
+<img src="https://user-images.githubusercontent.com/77898527/200717248-8847e1d4-6115-4310-9fd0-512885bbe4ea.png" alt="contextMenu" width="100"/>
 
 ## Compiling our code
 There are two ways to compile our code:
