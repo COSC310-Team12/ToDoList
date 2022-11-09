@@ -41,7 +41,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/dropdown_up" />
+        app:srcCompat="@drawable/dropdown_down" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/myCoordinatorLayout"

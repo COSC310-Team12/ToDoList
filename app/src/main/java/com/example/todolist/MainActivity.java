@@ -15,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.skydoves.powermenu.CustomPowerMenu;
 import com.skydoves.powermenu.MenuAnimation;
@@ -60,6 +62,10 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private final HashMap<String, Boolean> filters = new HashMap<>();
     private final static int EDIT_TODO_ACTIVITY_REQUEST = 1, ADD_TAGS_ACTIVITY_REQUEST = 2;
     private int newestCreatedToDo = -1;
+    private MyScrollListener toDoScrollListener, completedScrollListener;
+    private FloatingActionButton toTopButton;
+    private boolean[] toTop = new boolean[2];
+    private int toTopControl = 0; // 0: controlling incomplete list; 1: controlling completed list
 
     // initialization code
     @Override
@@ -72,9 +78,14 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         inputToDo = findViewById(R.id.inputToDo);
         dropdownIcon = findViewById(R.id.dropdownIcon);
         dropdownIcon2 = findViewById(R.id.dropdownIcon2);
+        toTopButton = findViewById(R.id.floatingActionButton);
+        searchView = findViewById(R.id.searchView);
 
         completedRecyclerView.setVisibility(View.GONE);
-        searchView = findViewById(R.id.searchView);
+//        toTopButton.hide();
+
+        toDoRecyclerView.addOnScrollListener(toDoScrollListener = new MyScrollListener());
+        completedRecyclerView.addOnScrollListener(completedScrollListener = new MyScrollListener());
 
         searchView.clearFocus();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -488,10 +499,63 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             dropdownIcon2.setImageResource(showIncomplete ? R.drawable.dropdown_down : R.drawable.dropdown_right);
             toDoRecyclerView.setVisibility(showIncomplete ? View.VISIBLE : View.GONE);
         }
+
+        // Determine which list is being controlled by the "to top" button
+        if (showIncomplete) { // Case where button controls incomplete list
+            toTopButton.show();
+            toTopControl = 0;
+        } else if (showCompleted) { // Case where button controls completed list
+            toTopButton.show();
+            toTopControl = 1;
+        } else // Case where there should be no button
+            toTopButton.hide();
+
+        // Check if the functionality of the "to top" button needs to change
+        gotoTopBottomSwap();
     }
 
     public void scrollToTop(View view) {
-        toDoRecyclerView.smoothScrollToPosition(0);
-        completedRecyclerView.smoothScrollToPosition(0);
+        if (toTop[toTopControl]) {
+            if (toTopControl == 0) {
+                toDoRecyclerView.smoothScrollToPosition(0);
+                toDoScrollListener.netScrollY = 0;
+            } else {
+                completedRecyclerView.smoothScrollToPosition(0);
+                completedScrollListener.netScrollY = 0;
+            }
+        } else {
+            if (toTopControl == 0) {
+                toDoRecyclerView.smoothScrollToPosition(Integer.MAX_VALUE);
+                toDoScrollListener.netScrollY = Integer.MAX_VALUE;
+            } else {
+                completedRecyclerView.smoothScrollToPosition(Integer.MAX_VALUE);
+                completedScrollListener.netScrollY = Integer.MAX_VALUE;
+            }
+        }
+        gotoTopBottomSwap();
+    }
+
+    // Swap functionality of the "to top" button between "to top" and "to bottom"
+    private void gotoTopBottomSwap() {
+        if (showIncomplete ? toDoScrollListener.netScrollY == 0 : !showCompleted || completedScrollListener.netScrollY == 0) {
+            toTop[toTopControl] = false;
+            toTopButton.setImageResource(R.drawable.dropdown_down);
+        } else {
+            toTop[toTopControl] = true;
+            toTopButton.setImageResource(R.drawable.dropdown_up);
+        }
+    }
+
+    private class MyScrollListener extends RecyclerView.OnScrollListener {
+        int netScrollY = 0;
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            int oldPos = netScrollY;
+            netScrollY = Math.max(0, netScrollY + dy);
+            if (oldPos == 0 || netScrollY == 0)
+                gotoTopBottomSwap();
+        }
     }
 }
