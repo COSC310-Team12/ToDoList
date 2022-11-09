@@ -16,23 +16,37 @@ our custom **ToDoClickListener**. The onCreate() method contains initialization 
 New to-do's are created from user input using the createToDo method.
 The onEditClick() and onCheckClick() methods are bound to the RecyclerView elements (individual to-dos).
 
-**EditToDo** controls the edit to-do page. Users can navigate to this page by clicking on a to-do.
-This triggers the onEditClick() method and sends the to-do array list to the **EditToDo** class.
+**EditToDoActivity** controls the edit to-do page. Users can navigate to this page by clicking on a to-do.
+This triggers the onEditClick() method and sends the to-do array list to the **EditToDoActivity** class.
 On the edit-to page, users can change the text of their to-do, and set a due date.
 
 **ToDo** is a serializable class to store information about to-dos.
 
-**ToDoAdapter** is a custom RecyclerViewAdapter. It contains an inner class, **MyViewHolder**, which is a
-custom ViewHolder.
+**ToDoAdapter** is a custom RecyclerViewAdapter. It contains an inner class, **MyViewHolder**, which 
+is a custom ViewHolder.
 
 **ToDoClickListener** is an interface implemented by the **MainActivity**. 
 It contains the onEditClick() and onCheckClick() method.
+
+**FilterPowerMenuItem** defines each item in a PowerMenu for the filter menu on the main activity.
+
+**EditTagActivity** controls the edit tag page. Users can navigate to this page through the context 
+menu that pops up when clicking on the three dots on a task. There, they can add new or existing 
+tags to tasks. They can also delete existing tags.
+
+**FilterMenuAdapter** is a custom MenuBaseAdapter. 
+
+**TagAdapter** is a custom RecyclerViewAdapter. It contains an inner class, **MyViewHolder**, which 
+is a custom ViewHolder.
+
+**TagClickListener** is an interface implemented by the **AddTagActivity**.
+It contains the onDeleteClick() method.
 
 ## Documentation for Assignment 3
 
 Since our system already had a GUI, we made improvements to the existing GUI.
 
-### features that enable your system to handle the drawbacks of the first version of the system
+### Features that enable your system to handle the drawbacks of the first version of the system
 
 Made to-do's searchable
 - users can search for tasks by name. This helps users find tasks more easily.
@@ -46,7 +60,7 @@ Improved goBack()
 Show due date on main page
 - users can now see the due dates they add on the main page. This feature makes the app easier to use, users can see the due date on the main page instead of having to click on the task now.
 
-### features that use open-source libraries to improve the functionality of the system
+### Features that use open-source libraries to improve the functionality of the system
 
 Added tags
 - users can now classify their tasks using tags. Tags are implemented using, among others the AndroidX Library. Tags improve our system because they give the user the option to categorize their tasks.
