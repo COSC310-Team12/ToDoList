@@ -26,4 +26,5 @@
     <string name="due_date_none">Due date: none</string>
     <string name="filters">Filters</string>
     <string name="completed">Completed</string>
+    <string name="incomplete">Incomplete</string>
 </resources>

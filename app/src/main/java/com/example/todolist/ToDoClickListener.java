@@ -10,4 +10,6 @@ public interface ToDoClickListener {
     void onEditClick(View view, int position);
 
     void onCheckClick(View view, int position);
+
+    void onTaskCreated(ToDoAdapter.MyViewHolder holder, int position);
 }
