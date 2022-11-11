@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     private ArrayList<ToDo> toDoList, completed, filtered;
     private RecyclerView toDoRecyclerView, completedRecyclerView;
-    private ToDoAdapter toDoRecyclerAdapter;
     private boolean showCompleted = false, showIncomplete = true;
     private ImageView dropdownIcon, dropdownIcon2;
     private EditText inputToDo;
@@ -65,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private int newestCreatedToDo = -1;
     private MyScrollListener toDoScrollListener, completedScrollListener;
     private FloatingActionButton toTopButton;
-    private boolean[] toTop = new boolean[2];
+    private final boolean[] toTop = new boolean[2];
     private int toTopControl = 0; // 0: controlling incomplete list; 1: controlling completed list
 
     // initialization code
@@ -438,7 +437,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     // Called after each ViewHolder is initialized in the onBindViewHolder method in ToDoAdapter
     public void onTaskCreated(ToDoAdapter.MyViewHolder holder, int position) {
-        // When a viewholder is created, check if it needs to be highlighted
+        // When a view-holder is created, check if it needs to be highlighted
         if (position != -1 && position == newestCreatedToDo) {
             // Creating an array of two colors
             ColorDrawable[] colors = new ColorDrawable[]{new ColorDrawable(Color.WHITE), new ColorDrawable(Color.parseColor("#cfcfcf"))};
