@@ -6,21 +6,137 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:queryHint="Search to-dos" />
+
+    <Button
+        android:id="@+id/button"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:onClick="openFilters"
+        android:text="@string/filters"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="scrollToTop"
+        app:backgroundTint="#BFBFBF"
+        app:layout_constraintBottom_toBottomOf="@+id/myCoordinatorLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/dropdown_down" />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/myCoordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
         android:layout_marginBottom="70dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/showIncomplete"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@android:color/transparent"
+                    android:onClick="showCompleted"
+                    android:text="@string/incomplete"
+                    android:textColor="@color/default_box_hint"
+                    android:textSize="12sp"
+                    app:rippleColor="@android:color/transparent" />
+
+                <ImageView
+                    android:id="@+id/dropdownIcon2"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:onClick="showCompleted"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/dropdown_down" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/toDoRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/showCompletedButton"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@android:color/transparent"
+                    android:onClick="showCompleted"
+                    android:text="@string/completed"
+                    android:textColor="@color/default_box_hint"
+                    android:textSize="12sp"
+                    app:rippleColor="@android:color/transparent" />
+
+                <ImageView
+                    android:id="@+id/dropdownIcon"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:onClick="showCompleted"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/dropdown_right" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/completedRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toDoRecyclerView"
+                tools:visibility="visible" />
+
+        </LinearLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

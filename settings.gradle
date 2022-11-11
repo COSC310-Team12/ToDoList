@@ -3,6 +3,7 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+
     }
 }
 dependencyResolutionManagement {
@@ -11,7 +12,6 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven {url 'https://mvnrepository.com/artifact/javax.mail/mail'}
 
     }
 }

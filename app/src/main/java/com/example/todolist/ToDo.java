@@ -1,16 +1,24 @@
 package com.example.todolist;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /*
 This is a serializable class to store information about to-dos.
 */
 
 public class ToDo implements Serializable {
+    private final UUID uuid = UUID.randomUUID(); // Implementation recommended by https://www.baeldung.com/java-uuid
     private String text;
     private boolean done;
     private Date date;
+    private final ArrayList<String> tags = new ArrayList<>();
 
     public ToDo(String text) {
         this.text = text;
@@ -46,6 +54,38 @@ public class ToDo implements Serializable {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public boolean addTag(String tag) {
+        if (!tag.equals(""))
+            tags.add(tag);
+        else
+            return false;
+        return true;
+    }
+
+    public boolean removeTag(String tag) {
+        return tags.remove(tag);
+    }
+
+    public ArrayList<String> getTags() {
+        return tags;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "ToDo{" +
+                "text='" + text + '\'' +
+                ", done=" + done +
+                ", date=" + date +
+                ", tags=" + tags +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return getClass() == o.getClass() && uuid.equals(((ToDo) o).uuid);
     }
 }
 
