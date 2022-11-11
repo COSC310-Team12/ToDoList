@@ -77,8 +77,14 @@ Since our system already had a GUI, we made improvements to the existing GUI.
 - users can now see the due dates they add on the main page. This feature makes the app easier to use, users can see the due date on the main page instead of having to click on the task now.
 <img src="https://user-images.githubusercontent.com/77898527/200717154-85eb8992-f97d-4f5e-9f8c-692e3994d65a.png" alt="displayDueDate" width="100"/>
 
-#### Refactored the way persistance is implemented
+#### Refactored the way persistence is implemented
 - Changed the way that tasks are stored to the disk. There is only one list of tasks being saved now. This makes the code easier to work with because we don't need to always be checking multiple lists when performing operations. This still is a problem to an extent, but is easier to manage.
+
+#### Changed list behaviour on adding task
+- The list now automatically scrolls to the bottom to show newly added tasks. This makes the app easier to use because users can see and edit their tasks immediately after adding them instead of having to scroll down.
+
+#### Added button to conveniently navigate the list
+- Users can use the gray button on the right to quickly navigate between the top and bottom of the list. This feature improves the efficiency of use for our app. Users can now easily navigate to their recent tasks at the bottom and back up to the search bar and the filter menu.
 
 ### Features that use open-source libraries to improve the functionality of the system
 
