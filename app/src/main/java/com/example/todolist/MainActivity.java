@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     private ArrayList<ToDo> toDoList, completed, filtered;
     private RecyclerView toDoRecyclerView, completedRecyclerView;
-    private ToDoAdapter toDoRecyclerAdapter, completedRecyclerAdapter;
+    private ToDoAdapter toDoRecyclerAdapter;
     private boolean showCompleted = false;
     private ImageView dropdownIcon;
     private EditText inputToDo;
@@ -112,12 +112,11 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 throw new FileNotFoundException("Not loading from file for debug purposes. To change this behavior, change LOAD_FROM_FILE to true");
             // try loading from saved file
             toDoList = (ArrayList<ToDo>) in.readObject();
-        } catch (FileNotFoundException | ClassNotFoundException e) {
+        } catch (Exception e) {
             // load defaults
             toDoList = new ArrayList<>();
             // save new state
             save();
-        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -209,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             loadData();
         } else {
             // ask the user to enter a name for the task
-            Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name", Snackbar.LENGTH_LONG).show();
+            makeNotification("Please enter a task name");
         }
     }
 
@@ -227,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         completedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         completedRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        completedRecyclerAdapter = new ToDoAdapter(completed);
+        ToDoAdapter completedRecyclerAdapter = new ToDoAdapter(completed);
         completedRecyclerView.setAdapter(completedRecyclerAdapter);
         completedRecyclerAdapter.setClickListener(this);
     }
