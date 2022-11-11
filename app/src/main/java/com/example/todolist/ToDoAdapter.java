@@ -25,7 +25,7 @@ https://www.youtube.com/watch?v=9rcrYFO1ogc&list=WL&index=2
 
 public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> {
 
-    private ArrayList<ToDo> toDoList;
+    private final ArrayList<ToDo> toDoList;
     private ToDoClickListener toDoClickListener;
 
     // constructor to initialize toDoList to values from toDoList in MainActivity
@@ -56,6 +56,8 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
             holder.dateView.setText(String.join("", "Due date: ", simpleDateFormat.format(toDoDate)));
         holder.checkBox.setChecked(toDoList.get(position).isDone());
         holder.checkBox.setOnCheckedChangeListener((compoundButton, b) -> toDoClickListener.onCheckClick(compoundButton, holder.getAdapterPosition()));
+
+        holder.onCreated();
     }
 
     // returns number of rows = size of toDoList or 0 if toDoList is null
@@ -86,6 +88,10 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
         public void onClick(View view) {
             if (toDoClickListener != null)
                 toDoClickListener.onEditClick(view, getAdapterPosition());
+        }
+
+        public void onCreated() {
+            toDoClickListener.onTaskCreated(this, getAdapterPosition());
         }
     }
 }

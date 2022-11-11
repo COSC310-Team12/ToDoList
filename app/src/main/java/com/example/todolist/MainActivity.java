@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -13,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -21,6 +24,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.skydoves.powermenu.CustomPowerMenu;
 import com.skydoves.powermenu.MenuAnimation;
@@ -49,15 +53,19 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     private ArrayList<ToDo> toDoList, completed, filtered;
     private RecyclerView toDoRecyclerView, completedRecyclerView;
-    private ToDoAdapter toDoRecyclerAdapter, completedRecyclerAdapter;
-    private boolean showCompleted = false;
-    private ImageView dropdownIcon;
+    private boolean showCompleted = false, showIncomplete = true;
+    private ImageView dropdownIcon, dropdownIcon2;
     private EditText inputToDo;
     private SearchView searchView;
     private List<FilterPowerMenuItem> filterItems;
     private ArrayList<String> filterList = new ArrayList<>();
     private final HashMap<String, Boolean> filters = new HashMap<>();
     private final static int EDIT_TODO_ACTIVITY_REQUEST = 1, ADD_TAGS_ACTIVITY_REQUEST = 2;
+    private int newestCreatedToDo = -1;
+    private MyScrollListener toDoScrollListener, completedScrollListener;
+    private FloatingActionButton toTopButton;
+    private boolean[] toTop = new boolean[2];
+    private int toTopControl = 0; // 0: controlling incomplete list; 1: controlling completed list
 
     // initialization code
     @Override
@@ -69,9 +77,15 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         completedRecyclerView = findViewById(R.id.completedRecyclerView);
         inputToDo = findViewById(R.id.inputToDo);
         dropdownIcon = findViewById(R.id.dropdownIcon);
+        dropdownIcon2 = findViewById(R.id.dropdownIcon2);
+        toTopButton = findViewById(R.id.floatingActionButton);
+        searchView = findViewById(R.id.searchView);
 
         completedRecyclerView.setVisibility(View.GONE);
-        searchView = findViewById(R.id.searchView);
+//        toTopButton.hide();
+
+        toDoRecyclerView.addOnScrollListener(toDoScrollListener = new MyScrollListener());
+        completedRecyclerView.addOnScrollListener(completedScrollListener = new MyScrollListener());
 
         searchView.clearFocus();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -198,15 +212,26 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     public void createToDo(View v) {
         // only allow user to add to-do if they entered text
         if (!isEmpty(inputToDo)) {
+            ToDo newToDo = new ToDo(inputToDo.getText().toString());
             // adding user input to-do to array list
-            toDoList.add(new ToDo(inputToDo.getText().toString()));
-            // need to call this so UI updates and newly added item is displayed
-            toDoRecyclerAdapter.notifyItemInserted(toDoRecyclerAdapter.getItemCount());
+            toDoList.add(newToDo);
             // clearing user input after to-do is submitted
             inputToDo.getText().clear();
+            // Clear search
+            searchView.setQuery("",true);
+            // Clear filters
+            for (String key : filters.keySet())
+                filters.put(key,false);
             // save changes
             save();
             loadData();
+            // Make sure incomplete tasks list is open, not completed tasks
+            if (!showIncomplete)
+                showCompleted(findViewById(R.id.showIncomplete));
+            // Get the position of the new to-do
+            newestCreatedToDo = indexOf(filtered, newToDo); // get index in case sorting doesn't put it at the bottom
+            // Scroll to new item
+            toDoRecyclerView.scrollToPosition(newestCreatedToDo);
         } else {
             // ask the user to enter a name for the task
             Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name", Snackbar.LENGTH_LONG).show();
@@ -219,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         toDoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         toDoRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        toDoRecyclerAdapter = new ToDoAdapter(filtered); // Changed this to use `filtered` so that we only show the user items that match the filter
+        ToDoAdapter toDoRecyclerAdapter = new ToDoAdapter(filtered); // Changed this to use `filtered` so that we only show the user items that match the filter
         toDoRecyclerView.setAdapter(toDoRecyclerAdapter);
         toDoRecyclerAdapter.setClickListener(this);
 
@@ -227,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         completedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         completedRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        completedRecyclerAdapter = new ToDoAdapter(completed);
+        ToDoAdapter completedRecyclerAdapter = new ToDoAdapter(completed);
         completedRecyclerView.setAdapter(completedRecyclerAdapter);
         completedRecyclerAdapter.setClickListener(this);
     }
@@ -237,6 +262,14 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         return editText.getText().toString().trim().length() == 0;
     }
 
+    // indexOf method that uses .equals() instead of ==
+    private int indexOf(ArrayList<ToDo> list, ToDo toDo) {
+        for (int i = 0; i < list.size(); i++)
+            if (list.get(i).equals(toDo))
+                return i;
+        return -1;
+    }
+    
     // method creates a new array list according to user search and calls recyclerAdapter to update data
     private void searchToDos(String text) {
         if (!text.equals("")) {
@@ -402,6 +435,27 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         }, 300);
     }
 
+    // Called after each ViewHolder is initialized in the onBindViewHolder method in ToDoAdapter
+    public void onTaskCreated(ToDoAdapter.MyViewHolder holder, int position) {
+        // When a viewholder is created, check if it needs to be highlighted
+        if (position != -1 && position == newestCreatedToDo) {
+            // Creating an array of two colors
+            ColorDrawable[] colors = new ColorDrawable[]{new ColorDrawable(Color.WHITE), new ColorDrawable(Color.parseColor("#cfcfcf"))};
+
+            // When button is clicked, A transition is created
+            // and applied to the background with specified duration
+            TransitionDrawable transition = new TransitionDrawable(colors);
+            holder.itemView.setBackground(transition);
+            int duration = 200;
+            transition.startTransition(duration);
+            // After the transition is completed, reverse it
+            new Handler().postDelayed(() -> transition.reverseTransition(duration), duration);
+
+            // Reset the newestCreatedToDo variable to -1 so that it doesn't keep highlighting
+            newestCreatedToDo = -1;
+        }
+    }
+
     public void makeNotification(String msg) {
         Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), msg, Snackbar.LENGTH_LONG);
         sb.show();
@@ -410,28 +464,14 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // Called when the user clicks the filter button
     // Handles applying a filter to the displayed tasks
     public void openFilters(View view) {
-        // Ensure the filterItems list is not null
-        if (filterItems == null)
-            filterItems = new ArrayList<>();
-
-        // Make sure all the filters in the menu still exist
-        loop:
-        for (int i = filterItems.size() - 1; i >= 0; i--) {
-            String tag = filterItems.get(i).getTitle();
-            for (String s : filterList)
-                if (tag.equals(s))
-                    continue loop;
-            filterItems.remove(i);
+        // Load in filterItems
+        filterItems = new ArrayList<>();
+        for (String tag : filterList) {
+            if (!filters.containsKey(tag))
+                filters.put(tag,false);
+            filterItems.add(new FilterPowerMenuItem(tag, filters.get(tag)));
         }
 
-        // Make sure all existing filters are in the menu
-        upperLoop:
-        for (String s : filterList) {
-            for (FilterPowerMenuItem i : filterItems)
-                if (i.getTitle().equals(s))
-                    continue upperLoop;
-            filterItems.add(new FilterPowerMenuItem(s));
-        }
         CustomPowerMenu<FilterPowerMenuItem, FilterMenuAdapter> customPowerMenu = new CustomPowerMenu.Builder<>(this, new FilterMenuAdapter())
                 .addItemList(filterItems)
                 .setAnimation(MenuAnimation.SHOWUP_TOP_RIGHT)
@@ -448,10 +488,74 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         customPowerMenu.showAsDropDown(view); // view is where the menu is anchored
     }
 
+    // Called when the user expands or collapses either the incomplete or completed list
     public void showCompleted(View view) {
-        showCompleted = !showCompleted;
+        if (view.getId() == R.id.showCompletedButton || view.getId() == R.id.dropdownIcon) {
+            showCompleted = !showCompleted;
+            dropdownIcon.setImageResource(showCompleted ? R.drawable.dropdown_down : R.drawable.dropdown_right);
+            completedRecyclerView.setVisibility(showCompleted ? View.VISIBLE : View.GONE);
+        } else if (view.getId() == R.id.showIncomplete || view.getId() == R.id.dropdownIcon2) {
+            showIncomplete = !showIncomplete;
+            dropdownIcon2.setImageResource(showIncomplete ? R.drawable.dropdown_down : R.drawable.dropdown_right);
+            toDoRecyclerView.setVisibility(showIncomplete ? View.VISIBLE : View.GONE);
+        }
 
-        dropdownIcon.setImageResource(showCompleted ? R.drawable.dropdown_down : R.drawable.dropdown_right);
-        completedRecyclerView.setVisibility(showCompleted ? View.VISIBLE : View.GONE);
+        // Determine which list is being controlled by the "to top" button
+        if (showIncomplete) { // Case where button controls incomplete list
+            toTopButton.show();
+            toTopControl = 0;
+        } else if (showCompleted) { // Case where button controls completed list
+            toTopButton.show();
+            toTopControl = 1;
+        } else // Case where there should be no button
+            toTopButton.hide();
+
+        // Check if the functionality of the "to top" button needs to change
+        gotoTopBottomSwap();
+    }
+
+    public void scrollToTop(View view) {
+        if (toTop[toTopControl]) {
+            if (toTopControl == 0) {
+                toDoRecyclerView.smoothScrollToPosition(0);
+                toDoScrollListener.netScrollY = 0;
+            } else {
+                completedRecyclerView.smoothScrollToPosition(0);
+                completedScrollListener.netScrollY = 0;
+            }
+        } else {
+            if (toTopControl == 0) {
+                toDoRecyclerView.smoothScrollToPosition(Integer.MAX_VALUE);
+                toDoScrollListener.netScrollY = Integer.MAX_VALUE;
+            } else {
+                completedRecyclerView.smoothScrollToPosition(Integer.MAX_VALUE);
+                completedScrollListener.netScrollY = Integer.MAX_VALUE;
+            }
+        }
+        gotoTopBottomSwap();
+    }
+
+    // Swap functionality of the "to top" button between "to top" and "to bottom"
+    private void gotoTopBottomSwap() {
+        if (showIncomplete ? toDoScrollListener.netScrollY == 0 : !showCompleted || completedScrollListener.netScrollY == 0) {
+            toTop[toTopControl] = false;
+            toTopButton.setImageResource(R.drawable.dropdown_down);
+        } else {
+            toTop[toTopControl] = true;
+            toTopButton.setImageResource(R.drawable.dropdown_up);
+        }
+    }
+
+    private class MyScrollListener extends RecyclerView.OnScrollListener {
+        int netScrollY = 0;
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            int oldPos = netScrollY;
+            netScrollY = Math.max(0, netScrollY + dy);
+            if (oldPos == 0 || netScrollY == 0)
+                gotoTopBottomSwap();
+        }
     }
 }

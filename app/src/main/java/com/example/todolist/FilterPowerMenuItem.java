@@ -5,8 +5,9 @@ public class FilterPowerMenuItem {
     private String title;
     private boolean checked = false;
 
-    public FilterPowerMenuItem(String title) {
+    public FilterPowerMenuItem(String title, Boolean checked) {
         this.title = title;
+        this.checked = checked;
     }
 
     public String getTitle() {
