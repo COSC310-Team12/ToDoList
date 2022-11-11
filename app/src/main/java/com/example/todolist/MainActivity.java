@@ -1,20 +1,30 @@
 package com.example.todolist;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private EditText inputToDo;
     NotificationManagerCompat notificationManagerCompat;
     android.app.Notification notification;
-
+    private int RequestPermission = 1;
     // initialization code
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,14 +68,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
-        //This creates the notification - this is hard coded for now. Just to show & test
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(this, "NotifyLate")
-                        .setSmallIcon(R.drawable.notificationbell)
-                        .setContentTitle("Late Task!")
-                        .setContentText("You have a task that is past due!");
-        notification = builder.build();
-        notificationManagerCompat = NotificationManagerCompat.from(this);
 
         recyclerView = findViewById(R.id.recyclerView);
         inputToDo = findViewById(R.id.inputToDo);
@@ -225,22 +227,76 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         sb.show();
 
     }
+    //Int dueSoon - 0 = due soon, 1 = past due, task is the name/task header that is late
+    public void sendNotification(int dueSoon, String task) {
+        //this if checks if permission has been granted yet - if yes you make the notification, if not asks for permission
+        if(ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+            NotificationCompat.Builder builder;
+            if(dueSoon == 0)
+            {
+                builder = new NotificationCompat.Builder(this, "NotifyLate")
+                        .setSmallIcon(R.drawable.notificationbell)
+                        .setContentTitle(task + " is almost due")
+                        .setContentText(task + " is due soon!");
 
-    public void sendMail(View v) {
-        //this line sends the notification - currently coded to a button
-        notificationManagerCompat.notify(1,notification);
-        //This currently isnt working & I havent included the files this commit
+            }
+            else
+            {
+                builder = new NotificationCompat.Builder(this, "NotifyLate")
+                        .setSmallIcon(R.drawable.notificationbell)
+                        .setContentTitle("Late Task!")
+                        .setContentText(task + " is overdue!");
 
-//        Notification mail = new  Notification();
-//            //Hard coded for now - in future can use .getText().toString with user input
-//            System.out.println("Before Sending email");
-//            GMailSender sender = new GMailSender("cosc310team12@gmail.com", "Cosc310_Team12!");
-//                    try{
-//                        sender.sendMail("You have a late task!","Warning task 2 is now late!","cosc310team12@gmail.com","gauthier34@hotmail.com");
-//                        System.out.println("After");
-//                    }catch (Exception e){
-//                        Log.e("SendMail", e.getMessage(), e);
-//                    }
+            }
+            notification = builder.build();
+            notificationManagerCompat = NotificationManagerCompat.from(this);
+            notificationManagerCompat.notify(1, notification);
+        }else{
+            requestPermissions();
+        }
+
+    }
+    //this is for creating getting the permission when creating notifications & the pop up screen - automatically enables notifications if yes
+    private void requestPermissions() {
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS)){
+            new AlertDialog.Builder(this)
+                    .setTitle("Notification Permission")
+                    .setMessage("Todo would like to send you notifications when a task is due soon or past-due")
+                    .setPositiveButton("Agree", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, RequestPermission);
+
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create().show();
+
+
+        }else{
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, RequestPermission);
+        }
     }
 
+    //Checks to see if the permission is granted or denied
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == RequestPermission) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+
+            }else{
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
 }
