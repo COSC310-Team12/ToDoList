@@ -61,7 +61,7 @@ Since our system already had a GUI, we made improvements to the existing GUI.
 - now displaying completed tasks using a RecyclerView (from AndroidX Library). This feature is a major improvement, because it allows users to reference previously completed tasks. Previously, tasks just became invisible to the user upon completion.
 <img src="https://user-images.githubusercontent.com/77898527/200717214-a077b894-7877-4953-9e43-907a2344fec9.png" alt="viewCompleted" width="100"/>
 
-#### Sorting tasks by they're due date - Limitation fix 3
+#### Sorting tasks by their due date - Limitation fix 3
 - Users are able to sort their tasks by due date. They can sort them by due date ascending or descending.
 
 #### TBD - Limitation fix 4 ⚠️⚠️⚠️⚠️⚠️
@@ -74,7 +74,7 @@ Since our system already had a GUI, we made improvements to the existing GUI.
 - refactored the method to improve performance (a previous limitation). This fix improves performance and long-term stability.
 
 #### Show due date on main page
-- users can now see the due dates they add on the main page. This feature makes the app easier to use, users can see the due date on the main page instead of having to click on the task now.
+- users can now see the due dates they add on the main page. This feature makes the app easier to use; users can see the due date on the main page instead of having to click on the task now.
 <img src="https://user-images.githubusercontent.com/77898527/200717154-85eb8992-f97d-4f5e-9f8c-692e3994d65a.png" alt="displayDueDate" width="100"/>
 
 #### Refactored the way persistence is implemented
