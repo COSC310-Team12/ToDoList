@@ -1,5 +1,20 @@
 package com.example.todolist;
 
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -9,16 +24,28 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+
+import android.widget.Toast;
+
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,10 +66,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+
+import java.util.Calendar;
+import java.util.concurrent.ExecutorService;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+
 
 
 /*
@@ -56,6 +88,11 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private boolean showCompleted = false, showIncomplete = true;
     private ImageView dropdownIcon, dropdownIcon2;
     private EditText inputToDo;
+
+    NotificationManagerCompat notificationManagerCompat;
+    android.app.Notification notification;
+    private int RequestPermission = 1;
+
     private SearchView searchView;
     private List<FilterPowerMenuItem> filterItems;
     private ArrayList<String> filterList = new ArrayList<>();
@@ -67,14 +104,26 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private final boolean[] toTop = new boolean[2];
     private int toTopControl = 0; // 0: controlling incomplete list; 1: controlling completed list
 
+
     // initialization code
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        //Creates the notification channel that can be toggled on in the app info settings - Default is off.
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            NotificationChannel channel = new NotificationChannel("NotifyLate", "Late Task Notification", NotificationManager.IMPORTANCE_HIGH);
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
         toDoRecyclerView = findViewById(R.id.toDoRecyclerView);
         completedRecyclerView = findViewById(R.id.completedRecyclerView);
+
         inputToDo = findViewById(R.id.inputToDo);
         dropdownIcon = findViewById(R.id.dropdownIcon);
         dropdownIcon2 = findViewById(R.id.dropdownIcon2);
@@ -458,6 +507,79 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     public void makeNotification(String msg) {
         Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), msg, Snackbar.LENGTH_LONG);
         sb.show();
+
+    }
+    //Int dueSoon - 0 = due soon, 1 = past due, task is the name/task header that is late
+    public void sendNotification(int dueSoon, String task) {
+        //this if checks if permission has been granted yet - if yes you make the notification, if not asks for permission
+        if(ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+            NotificationCompat.Builder builder;
+            if(dueSoon == 0)
+            {
+                builder = new NotificationCompat.Builder(this, "NotifyLate")
+                        .setSmallIcon(R.drawable.notificationbell)
+                        .setContentTitle(task + " is almost due")
+                        .setContentText(task + " is due soon!");
+
+            }
+            else
+            {
+                builder = new NotificationCompat.Builder(this, "NotifyLate")
+                        .setSmallIcon(R.drawable.notificationbell)
+                        .setContentTitle("Late Task!")
+                        .setContentText(task + " is overdue!");
+
+            }
+            notification = builder.build();
+            notificationManagerCompat = NotificationManagerCompat.from(this);
+            notificationManagerCompat.notify(1, notification);
+        }else{
+            requestPermissions();
+        }
+
+    }
+    //this is for creating getting the permission when creating notifications & the pop up screen - automatically enables notifications if yes
+    private void requestPermissions() {
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS)){
+            new AlertDialog.Builder(this)
+                    .setTitle("Notification Permission")
+                    .setMessage("Todo would like to send you notifications when a task is due soon or past-due")
+                    .setPositiveButton("Agree", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, RequestPermission);
+
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create().show();
+
+
+        }else{
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, RequestPermission);
+        }
+    }
+
+    //Checks to see if the permission is granted or denied
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == RequestPermission) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+
+            }else{
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+
+        }
     }
 
     // Called when the user clicks the filter button
