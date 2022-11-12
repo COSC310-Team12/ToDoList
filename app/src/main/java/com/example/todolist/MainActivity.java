@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private int newestCreatedToDo = -1;
     private MyScrollListener toDoScrollListener, completedScrollListener;
     private FloatingActionButton toTopButton;
-    private boolean[] toTop = new boolean[2];
+    private final boolean[] toTop = new boolean[2];
     private int toTopControl = 0; // 0: controlling incomplete list; 1: controlling completed list
 
 
@@ -175,12 +175,11 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 throw new FileNotFoundException("Not loading from file for debug purposes. To change this behavior, change LOAD_FROM_FILE to true");
             // try loading from saved file
             toDoList = (ArrayList<ToDo>) in.readObject();
-        } catch (FileNotFoundException | ClassNotFoundException e) {
+        } catch (Exception e) {
             // load defaults
             toDoList = new ArrayList<>();
             // save new state
             save();
-        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -283,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             toDoRecyclerView.scrollToPosition(newestCreatedToDo);
         } else {
             // ask the user to enter a name for the task
-            Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name", Snackbar.LENGTH_LONG).show();
+            makeNotification("Please enter a task name");
         }
     }
 
@@ -318,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 return i;
         return -1;
     }
-    
+
     // method creates a new array list according to user search and calls recyclerAdapter to update data
     private void searchToDos(String text) {
         if (!text.equals("")) {
@@ -486,7 +485,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
 
     // Called after each ViewHolder is initialized in the onBindViewHolder method in ToDoAdapter
     public void onTaskCreated(ToDoAdapter.MyViewHolder holder, int position) {
-        // When a viewholder is created, check if it needs to be highlighted
+        // When a view-holder is created, check if it needs to be highlighted
         if (position != -1 && position == newestCreatedToDo) {
             // Creating an array of two colors
             ColorDrawable[] colors = new ColorDrawable[]{new ColorDrawable(Color.WHITE), new ColorDrawable(Color.parseColor("#cfcfcf"))};
