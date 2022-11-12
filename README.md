@@ -49,7 +49,7 @@ Test code is contained in **EditToDoActivityUnitTest**
 
 ## Documentation for Assignment 3
 
-Since our system already had a GUI, we made improvements to the existing GUI.
+Since our system already had a GUI, we made improvements to the existing GUI. We designed a custom icon and added that to our app. We also implemented general functionality and interface improvements, such as adding a search bar.
 
 ### Features that enable your system to handle the drawbacks of the first version of the system
 
