@@ -121,8 +121,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             manager.createNotificationChannel(channel);
         }
 
-        recyclerView = findViewById(R.id.recyclerView);
-
         toDoRecyclerView = findViewById(R.id.toDoRecyclerView);
         completedRecyclerView = findViewById(R.id.completedRecyclerView);
 
