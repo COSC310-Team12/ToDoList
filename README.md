@@ -96,8 +96,8 @@ Since our system already had a GUI, we made improvements to the existing GUI. We
 - used the Skydoves open-source library to add a context menu when the user clicks the three dots on a task. This feature improves the effectiveness of our app by reducing the number of steps users have to complete to perform common tasks.
 <img src="https://user-images.githubusercontent.com/77898527/200717248-8847e1d4-6115-4310-9fd0-512885bbe4ea.png" alt="contextMenu" width="100"/>
 
-#### App notifications and email notifications - New feature 3
-- ⚠️⚠️⚠️⚠️⚠️ Need to add info here ⚠️⚠️⚠️⚠️⚠️
+#### App notifications - New feature 3
+- ️The user can now setup to receive notifications if a certain task is due soon or overdue. This implementation uses the open-source android library Notification & Notification Manager to create pop-up notifications & lock screen notifications. This provides meaningful warnings & information to our users allowing them to complete their objectives in a timely manner.  
 
 ## Compiling our code
 There are two ways to compile our code:
