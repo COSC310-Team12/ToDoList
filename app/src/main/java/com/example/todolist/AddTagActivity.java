@@ -22,6 +22,7 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
     private EditText tagNameEditText;
     private RecyclerView recyclerView;
     private ArrayList<ToDo> toDoList;
+    private int toDoIndex;
     private ToDo toDo;
     private CoordinatorLayout snackbarPlaceholder;
     private String tagName=null;
@@ -36,7 +37,7 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         Intent intent = getIntent();
         //noinspection unchecked
         toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
-        int toDoIndex = intent.getIntExtra("Index", 0);
+        toDoIndex = intent.getIntExtra("Index", 0);
         toDo = toDoList.get(toDoIndex);
 
         tagNameEditText = findViewById(R.id.editTextTagName);
@@ -88,12 +89,14 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         if (!tag.isEmpty()) {
             if (!toDo.getTags().contains(tag)) {
                 toDo.addTag(tag);
+                setAdapter();
                 if(tag.equals("Graded")){
                     Intent intent=new Intent(this,totalGrade.class);
+                    intent.putExtra("ToDoList", toDoList);
+                    intent.putExtra("Index",toDoIndex);
                     intent.putExtra("todo",toDo.getText());
                     startActivity(intent);
                 }
-                setAdapter();
             } else {
                 Snackbar.make(snackbarPlaceholder, "Tag is already on task", Snackbar.LENGTH_SHORT).show();
             }

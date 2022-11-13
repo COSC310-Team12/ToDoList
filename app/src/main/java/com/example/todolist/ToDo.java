@@ -20,8 +20,8 @@ public class ToDo implements Serializable {
     private String text;
     private boolean done;
     private Date date;
-    private int maxGrade;
-    private int gradeReceived;
+    private float maxGrade;
+    private float gradeReceived;
     private final ArrayList<String> tags = new ArrayList<>();
 
 
@@ -61,13 +61,13 @@ public class ToDo implements Serializable {
         this.date = date;
     }
 
-    public int getMaxGrade() { return maxGrade; }
+    public float getMaxGrade() { return maxGrade; }
 
-    public void setMaxGrade(int maxGrade) { this.maxGrade = maxGrade; }
+    public void setMaxGrade(float maxGrade) { this.maxGrade = maxGrade; }
 
-    public int getGradeReceived() { return gradeReceived; }
+    public float getGradeReceived() { return gradeReceived; }
 
-    public void setGradeReceived(int gradeReceived) { this.gradeReceived = gradeReceived; }
+    public void setGradeReceived(float gradeReceived) { this.gradeReceived = gradeReceived; }
 
     public boolean addTag(String tag) {
         if (!tag.equals("")) {
