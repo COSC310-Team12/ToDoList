@@ -111,6 +111,13 @@
                 android:text="@string/submit" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/notifyButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set Reminder" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

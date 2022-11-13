@@ -68,9 +68,11 @@ public class EditToDo extends AppCompatActivity {
         nameBox = findViewById(R.id.titleBox);
         coordinatorLayout = findViewById(R.id.myCoordinatorLayout);
 
+
         Button cancelEditButton = findViewById(R.id.cancelEditButton);
         Button deleteButton = findViewById(R.id.deleteButton);
         Button submitEditButton = findViewById(R.id.doneButton);
+        Button notify = findViewById(R.id.notifyButton);
 
         cancelEditButton.setOnClickListener(this::goBack);
         deleteButton.setOnClickListener(this::deleteToDo);
@@ -226,5 +228,8 @@ public class EditToDo extends AppCompatActivity {
             dueDateBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_500)));
             dueDateBox.setHelperText(" ");
         }
+    }
+    public void notificationCaller(){
+
     }
 }
