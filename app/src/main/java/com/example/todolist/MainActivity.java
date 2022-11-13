@@ -65,6 +65,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.PortUnreachableException;
 import java.util.ArrayList;
 
 import java.util.Calendar;
@@ -110,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         //Creates the notification channel that can be toggled on in the app info settings - Default is off.
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -355,6 +355,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         itemList.add(new PowerMenuItem("Edit", false));
         itemList.add(new PowerMenuItem("Edit Tags", false));
         itemList.add(new PowerMenuItem("Delete", false));
+        itemList.add(new PowerMenuItem("Set task as 'Graded'",false));
 
         PowerMenu powerMenu = new PowerMenu.Builder(this)
                 .addItemList(itemList)
@@ -407,6 +408,12 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 // send toDoList so that we can edit it there, then reload it when returning to main activity
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
+                startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
+            } else if(item.getTitle().equals("Set task as 'Graded'")) {
+                Intent i = new Intent(this, AddTagActivity.class);
+                i.putExtra("ToDoList", toDoList);
+                i.putExtra("Index", toDoList.indexOf(clickedToDo));
+                i.putExtra("tagName","Graded"); // This is the tag that will be added to the activity if this is selected.
                 startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
             }
         });

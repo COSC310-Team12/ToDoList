@@ -24,7 +24,7 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
     private ArrayList<ToDo> toDoList;
     private ToDo toDo;
     private CoordinatorLayout snackbarPlaceholder;
-
+    private String tagName=null;
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +45,10 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         recyclerView = findViewById(R.id.toDoRecyclerView);
         TextView activityTitle1 = findViewById(R.id.addTagsTitle);
         snackbarPlaceholder = findViewById(R.id.myCoordinatorLayout);
+
+        tagName=intent.getStringExtra("tagName");
+        if(tagName.equals("Graded")) // This is used to created the "Graded" tag for ToDos that are marked.
+            tagNameEditText.setText("Graded");
 
         String activityTitle = toDo.getText();
         if (activityTitle.length() > 25) {
@@ -84,6 +88,11 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         if (!tag.isEmpty()) {
             if (!toDo.getTags().contains(tag)) {
                 toDo.addTag(tag);
+                if(tag.equals("Graded")){
+                    Intent intent=new Intent(this,totalGrade.class);
+                    intent.putExtra("todo",toDo.getText());
+                    startActivity(intent);
+                }
                 setAdapter();
             } else {
                 Snackbar.make(snackbarPlaceholder, "Tag is already on task", Snackbar.LENGTH_SHORT).show();

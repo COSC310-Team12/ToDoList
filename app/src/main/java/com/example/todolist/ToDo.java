@@ -1,5 +1,7 @@
 package com.example.todolist;
 
+import android.content.Intent;
+
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
@@ -18,7 +20,10 @@ public class ToDo implements Serializable {
     private String text;
     private boolean done;
     private Date date;
+    private int maxGrade;
+    private int gradeReceived;
     private final ArrayList<String> tags = new ArrayList<>();
+
 
     public ToDo(String text) {
         this.text = text;
@@ -56,9 +61,18 @@ public class ToDo implements Serializable {
         this.date = date;
     }
 
+    public int getMaxGrade() { return maxGrade; }
+
+    public void setMaxGrade(int maxGrade) { this.maxGrade = maxGrade; }
+
+    public int getGradeReceived() { return gradeReceived; }
+
+    public void setGradeReceived(int gradeReceived) { this.gradeReceived = gradeReceived; }
+
     public boolean addTag(String tag) {
-        if (!tag.equals(""))
+        if (!tag.equals("")) {
             tags.add(tag);
+        }
         else
             return false;
         return true;
