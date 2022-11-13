@@ -25,7 +25,7 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
     private int toDoIndex;
     private ToDo toDo;
     private CoordinatorLayout snackbarPlaceholder;
-    private String tagName=null;
+    private String tagName;
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +33,11 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         setContentView(R.layout.activity_add_tag);
 
         setTitle("Edit Tags");
-
         Intent intent = getIntent();
         //noinspection unchecked
         toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
         toDoIndex = intent.getIntExtra("Index", 0);
+        tagName=intent.getStringExtra("tagName");
         toDo = toDoList.get(toDoIndex);
 
         tagNameEditText = findViewById(R.id.editTextTagName);
@@ -49,7 +49,7 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
 
         tagName=intent.getStringExtra("tagName");
         if(tagName.equals("Graded")) // This is used to created the "Graded" tag for ToDos that are marked.
-            tagNameEditText.setText("Graded");
+             tagNameEditText.setText("Graded");
 
         String activityTitle = toDo.getText();
         if (activityTitle.length() > 25) {

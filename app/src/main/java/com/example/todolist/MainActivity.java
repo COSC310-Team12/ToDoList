@@ -356,6 +356,9 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         itemList.add(new PowerMenuItem("Edit Tags", false));
         itemList.add(new PowerMenuItem("Delete", false));
         itemList.add(new PowerMenuItem("Set task as 'Graded'",false));
+        if(clickedToDo.getTags().contains("Graded")){
+            itemList.add(new PowerMenuItem("Enter Grade Received",false));
+        }
 
         PowerMenu powerMenu = new PowerMenu.Builder(this)
                 .addItemList(itemList)
@@ -408,6 +411,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 // send toDoList so that we can edit it there, then reload it when returning to main activity
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
+                i.putExtra("tagName",""); // default tag(empty string)
                 startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
             } else if(item.getTitle().equals("Set task as 'Graded'")) {
                 Intent i = new Intent(this, AddTagActivity.class);
