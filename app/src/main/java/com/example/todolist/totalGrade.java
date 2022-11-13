@@ -9,7 +9,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-
+/*
+This Activity is used to get the total possible grade for a Graded Task whenever we set a Task as Graded.
+ */
 public class totalGrade extends AppCompatActivity {
     private TextView title;
     private EditText totalGradeInput;

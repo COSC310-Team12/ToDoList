@@ -90,7 +90,7 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
             if (!toDo.getTags().contains(tag)) {
                 toDo.addTag(tag);
                 setAdapter();
-                if(tag.equals("Graded")){
+                if(tag.equals("Graded")){ // In case the tag added is graded, then we want to get the total possible Grade for th given todo so we call Activity totalGrade.class
                     Intent intent=new Intent(this,totalGrade.class);
                     intent.putExtra("ToDoList", toDoList);
                     intent.putExtra("Index",toDoIndex);
