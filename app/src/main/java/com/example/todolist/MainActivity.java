@@ -319,13 +319,13 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             toDoList.add(newToDo);
             // clearing user input after to-do is submitted
             inputToDo.getText().clear();
-            // Clear search
-            searchView.setQuery("",true);
+            // save changes
+            save();
             // Clear filters
             for (String key : filters.keySet())
                 filters.put(key,false);
-            // save changes
-            save();
+            // Clear search
+            searchView.setQuery("",true);
             loadData();
             // Make sure incomplete tasks list is open, not completed tasks
             if (!showIncomplete)
