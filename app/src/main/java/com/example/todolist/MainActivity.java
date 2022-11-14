@@ -11,6 +11,7 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,6 +56,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.skydoves.powermenu.CustomPowerMenu;
 import com.skydoves.powermenu.MenuAnimation;
+import com.skydoves.powermenu.OnMenuItemClickListener;
 import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 
@@ -65,6 +67,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.PortUnreachableException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 import java.util.Calendar;
@@ -103,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private FloatingActionButton toTopButton;
     private final boolean[] toTop = new boolean[2];
     private int toTopControl = 0; // 0: controlling incomplete list; 1: controlling completed list
+    private int sortingType=0; // this is used to control the sort of the tasks.
+
 
 
     // initialization code
@@ -110,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         //Creates the notification channel that can be toggled on in the app info settings - Default is off.
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -165,6 +170,39 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         loadData();
     }
 
+    public void onSort(View view){
+        ArrayList<PowerMenuItem> list=new ArrayList<>();
+        list.add(new PowerMenuItem("Ascending Due Date",false));
+        list.add(new PowerMenuItem("Descending Due Date",false));
+        list.add(new PowerMenuItem("Total Marks",false));
+        PowerMenu powerMenu = new PowerMenu.Builder(this)
+                .addItemList(list) // list has "Novel", "Poetry", "Art"
+                .setAnimation(MenuAnimation.SHOWUP_TOP_LEFT) // Animation start point (TOP | LEFT).
+                .setMenuRadius(10f) // sets the corner radius.
+                .setMenuShadow(10f) // sets the shadow.
+                .setTextColor(ContextCompat.getColor(this, R.color.black))
+                .setTextGravity(Gravity.CENTER)
+                .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                .setSelectedTextColor(Color.WHITE)
+                .setMenuColor(Color.WHITE)
+                .setSelectedMenuColor(ContextCompat.getColor(this, R.color.purple_500)).build();
+        powerMenu.setOnMenuItemClickListener(new OnMenuItemClickListener<PowerMenuItem>() {
+            @Override
+            public void onItemClick(int position, PowerMenuItem item) {
+                powerMenu.dismiss();
+                if(position==0)
+                    sortingType = 0;
+                if (position==1)
+                    sortingType = 1;
+                if(position==2)
+                    sortingType=2;
+                loadData();
+            }
+        });
+        powerMenu.showAsDropDown(view);
+
+    }
+
     @SuppressWarnings("unchecked")
     private void loadData() {
         // Read in from file
@@ -202,7 +240,23 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             else if (toDo.isDone() && filterAllows(toDo))
                 completed.add(toDo);
         }
-
+        if(sortingType==0) {
+            Collections.sort(filtered, ToDo.DueDateAscComparator);
+            Collections.sort(completed, ToDo.DueDateAscComparator);
+        }
+        if(sortingType==1) {
+            Collections.sort(filtered, ToDo.DueDateDescComparator);
+            Collections.sort(completed, ToDo.DueDateDescComparator);
+        }
+        if(sortingType==2){
+            for (ToDo task: filtered
+                 ) {
+                System.out.println(task.getText()+" total: "+task.getMaxGrade());
+                System.out.println(task.getText()+" Received: "+task.getGradeReceived());
+            }
+            Collections.sort(filtered, ToDo.TotalMarksComparator);
+            Collections.sort(completed, ToDo.TotalMarksComparator);
+        }
         setAdapter();
     }
 
@@ -355,6 +409,10 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         itemList.add(new PowerMenuItem("Edit", false));
         itemList.add(new PowerMenuItem("Edit Tags", false));
         itemList.add(new PowerMenuItem("Delete", false));
+        itemList.add(new PowerMenuItem("Set task as 'Graded'",false));
+        if(clickedToDo.getTags().contains("Graded")){
+            itemList.add(new PowerMenuItem("Enter Grade Received",false));
+        }
 
         PowerMenu powerMenu = new PowerMenu.Builder(this)
                 .addItemList(itemList)
@@ -407,7 +465,19 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 // send toDoList so that we can edit it there, then reload it when returning to main activity
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
+                i.putExtra("tagName",""); // default tag(empty string)
                 startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
+            } else if(item.getTitle().equals("Set task as 'Graded'")) {
+                clickedToDo.addTag("Graded");
+                Intent i = new Intent(this, totalGrade.class);
+                i.putExtra("ToDoList", toDoList);
+                i.putExtra("Index", toDoList.indexOf(clickedToDo));
+                startActivityForResult(i, EDIT_TODO_ACTIVITY_REQUEST);
+            } else if(item.getTitle().equals("Enter Grade Received")) { // This will show up only for Graded ToDos.
+                Intent i=new Intent(this,GradeReceived.class);
+                i.putExtra("ToDoList", toDoList);
+                i.putExtra("Index", toDoList.indexOf(clickedToDo));
+                startActivityForResult(i,EDIT_TODO_ACTIVITY_REQUEST);
             }
         });
         powerMenu.showAsAnchorRightBottom(view); // view is where the menu is anchored

@@ -22,9 +22,10 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
     private EditText tagNameEditText;
     private RecyclerView recyclerView;
     private ArrayList<ToDo> toDoList;
+    private int toDoIndex;
     private ToDo toDo;
     private CoordinatorLayout snackbarPlaceholder;
-
+    private String tagName;
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +33,11 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         setContentView(R.layout.activity_add_tag);
 
         setTitle("Edit Tags");
-
         Intent intent = getIntent();
         //noinspection unchecked
         toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
-        int toDoIndex = intent.getIntExtra("Index", 0);
+        toDoIndex = intent.getIntExtra("Index", 0);
+        tagName=intent.getStringExtra("tagName");
         toDo = toDoList.get(toDoIndex);
 
         tagNameEditText = findViewById(R.id.editTextTagName);
@@ -45,6 +46,10 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         recyclerView = findViewById(R.id.toDoRecyclerView);
         TextView activityTitle1 = findViewById(R.id.addTagsTitle);
         snackbarPlaceholder = findViewById(R.id.myCoordinatorLayout);
+
+        tagName=intent.getStringExtra("tagName");
+        if(tagName.equals("Graded")) // This is used to created the "Graded" tag for ToDos that are marked.
+             tagNameEditText.setText("Graded");
 
         String activityTitle = toDo.getText();
         if (activityTitle.length() > 25) {
@@ -85,6 +90,13 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
             if (!toDo.getTags().contains(tag)) {
                 toDo.addTag(tag);
                 setAdapter();
+                if(tag.equals("Graded")){ // In case the tag added is graded, then we want to get the total possible Grade for th given todo so we call Activity totalGrade.class
+                    Intent intent=new Intent(this,totalGrade.class);
+                    intent.putExtra("ToDoList", toDoList);
+                    intent.putExtra("Index",toDoIndex);
+                    intent.putExtra("todo",toDo.getText());
+                    startActivity(intent);
+                }
             } else {
                 Snackbar.make(snackbarPlaceholder, "Tag is already on task", Snackbar.LENGTH_SHORT).show();
             }
