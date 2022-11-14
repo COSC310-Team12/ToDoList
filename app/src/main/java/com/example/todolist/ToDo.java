@@ -126,9 +126,9 @@ public class ToDo implements Serializable {
         @Override
         public int compare(ToDo t1, ToDo t2) {
             if(t2.getMaxGrade()-t1.getMaxGrade()>0)
-                return -1;
-            else if((t2.getMaxGrade()-t1.getMaxGrade()<0))
                 return 1;
+            else if((t2.getMaxGrade()-t1.getMaxGrade()<0))
+                return -1;
             else return 0;
         }
     };

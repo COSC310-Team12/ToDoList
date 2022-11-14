@@ -68,6 +68,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.PortUnreachableException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 import java.util.Calendar;
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private List<FilterPowerMenuItem> filterItems;
     private ArrayList<String> filterList = new ArrayList<>();
     private final HashMap<String, Boolean> filters = new HashMap<>();
-    private final static int EDIT_TODO_ACTIVITY_REQUEST = 1, ADD_TAGS_ACTIVITY_REQUEST = 2, SET_MAX_GRADE_ACTIVITY_REQUEST = 3;
+    private final static int EDIT_TODO_ACTIVITY_REQUEST = 1, ADD_TAGS_ACTIVITY_REQUEST = 2;
     private int newestCreatedToDo = -1;
     private MyScrollListener toDoScrollListener, completedScrollListener;
     private FloatingActionButton toTopButton;
@@ -476,7 +477,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 Intent i=new Intent(this,GradeReceived.class);
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
-                startActivity(i);
+                startActivityForResult(i,EDIT_TODO_ACTIVITY_REQUEST);
             }
         });
         powerMenu.showAsAnchorRightBottom(view); // view is where the menu is anchored
