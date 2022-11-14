@@ -125,11 +125,17 @@ public class ToDo implements Serializable {
     public static Comparator<ToDo> TotalMarksComparator= new Comparator<ToDo>() {
         @Override
         public int compare(ToDo t1, ToDo t2) {
-            if(t2.getMaxGrade()-t1.getMaxGrade()>0)
+            if (t2.getMaxGrade() - t1.getMaxGrade() > 0)
                 return 1;
-            else if((t2.getMaxGrade()-t1.getMaxGrade()<0))
+            else if ((t2.getMaxGrade() - t1.getMaxGrade() < 0))
                 return -1;
-            else return 0;
+            else { // if the total Grades are the same, then sort Ascendingly
+                if(t1.getDate()==null)
+                    return 1;
+                else if(t2.getDate()==null)
+                    return -1;
+                else return t1.getDate().compareTo(t2.getDate());
+            }
         }
     };
 }
