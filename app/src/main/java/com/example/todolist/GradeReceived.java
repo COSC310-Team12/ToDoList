@@ -29,11 +29,21 @@ public class GradeReceived extends AppCompatActivity {
         gradeInputEditText=(EditText) findViewById(R.id.inputGradeEditText);
         System.out.println(toDo.getMaxGrade());
         textView.setText("Enter the Grade received for "+toDo.getText()+" ( /"+toDo.getMaxGrade()+")");
+        if(toDo.getGradeReceived()!=0)
+            gradeInputEditText.setText(toDo.getGradeReceived()+"");
+        //allows to submit the Grade Received by pressing the enter key.
+        gradeInputEditText.setOnEditorActionListener((textView, i, keyEvent) -> {
+            if (i == 6 || keyEvent.getAction() == 0) {
+                GradeReceived.this.submitGradeReceived(textView);
+            }
+            return true;
+        });
     }
     public void submitGradeReceived(View view){
         float gradeReceived=Float.parseFloat(gradeInputEditText.getText().toString());
         toDo.setGradeReceived(gradeReceived);
         setResult(RESULT_OK, new Intent().putExtra("ToDoList", toDoList));
         finish();
+
     }
 }

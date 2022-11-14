@@ -28,6 +28,12 @@ public class totalGrade extends AppCompatActivity {
         title=(TextView) findViewById(R.id.totalGradeTitle);
         totalGradeInput=(EditText) findViewById(R.id.totalGradeInput);
         title.setText("Enter Total Grade for "+toDoList.get(toDoIndex).getText());
+        totalGradeInput.setOnEditorActionListener((textView, i, keyEvent) -> {
+            if (i == 6 || keyEvent.getAction() == 0) {
+                totalGrade.this.submitTotalGrade(textView);
+            }
+            return true;
+        });
     }
     public void submitTotalGrade(View view){
         float totalGrade=Float.parseFloat(totalGradeInput.getText().toString());
