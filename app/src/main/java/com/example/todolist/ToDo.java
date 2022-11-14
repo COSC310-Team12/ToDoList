@@ -122,5 +122,15 @@ public class ToDo implements Serializable {
             else return t2.getDate().compareTo(t1.getDate());
         }
     };
+    public static Comparator<ToDo> TotalMarksComparator= new Comparator<ToDo>() {
+        @Override
+        public int compare(ToDo t1, ToDo t2) {
+            if(t2.getMaxGrade()-t1.getMaxGrade()>0)
+                return -1;
+            else if((t2.getMaxGrade()-t1.getMaxGrade()<0))
+                return 1;
+            else return 0;
+        }
+    };
 }
 

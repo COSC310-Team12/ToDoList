@@ -169,6 +169,39 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         loadData();
     }
 
+    public void onSort(View view){
+        ArrayList<PowerMenuItem> list=new ArrayList<>();
+        list.add(new PowerMenuItem("Ascending Due Date",false));
+        list.add(new PowerMenuItem("Descending Due Date",false));
+        list.add(new PowerMenuItem("Total Marks",false));
+        PowerMenu powerMenu = new PowerMenu.Builder(this)
+                .addItemList(list) // list has "Novel", "Poetry", "Art"
+                .setAnimation(MenuAnimation.SHOWUP_TOP_LEFT) // Animation start point (TOP | LEFT).
+                .setMenuRadius(10f) // sets the corner radius.
+                .setMenuShadow(10f) // sets the shadow.
+                .setTextColor(ContextCompat.getColor(this, R.color.black))
+                .setTextGravity(Gravity.CENTER)
+                .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                .setSelectedTextColor(Color.WHITE)
+                .setMenuColor(Color.WHITE)
+                .setSelectedMenuColor(ContextCompat.getColor(this, R.color.purple_500)).build();
+        powerMenu.setOnMenuItemClickListener(new OnMenuItemClickListener<PowerMenuItem>() {
+            @Override
+            public void onItemClick(int position, PowerMenuItem item) {
+                powerMenu.dismiss();
+                if(position==0)
+                    sortingType = 0;
+                if (position==1)
+                    sortingType = 1;
+                if(position==2)
+                    sortingType=2;
+                loadData();
+            }
+        });
+        powerMenu.showAsDropDown(view);
+
+    }
+
     @SuppressWarnings("unchecked")
     private void loadData() {
         // Read in from file
@@ -206,7 +239,23 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             else if (toDo.isDone() && filterAllows(toDo))
                 completed.add(toDo);
         }
-
+        if(sortingType==0) {
+            Collections.sort(filtered, ToDo.DueDateAscComparator);
+            Collections.sort(completed, ToDo.DueDateAscComparator);
+        }
+        if(sortingType==1) {
+            Collections.sort(filtered, ToDo.DueDateDescComparator);
+            Collections.sort(completed, ToDo.DueDateDescComparator);
+        }
+        if(sortingType==2){
+            for (ToDo task: filtered
+                 ) {
+                System.out.println(task.getText()+" total: "+task.getMaxGrade());
+                System.out.println(task.getText()+" Received: "+task.getGradeReceived());
+            }
+            Collections.sort(filtered, ToDo.TotalMarksComparator);
+            Collections.sort(completed, ToDo.TotalMarksComparator);
+        }
         setAdapter();
     }
 
@@ -697,35 +746,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             netScrollY = Math.max(0, netScrollY + dy);
             if (oldPos == 0 || netScrollY == 0)
                 gotoTopBottomSwap();
-        }
-        public void onSort(View view){
-            ArrayList<PowerMenuItem> list=new ArrayList<>();
-            list.add(new PowerMenuItem("Ascending",false));
-            list.add(new PowerMenuItem("Descending",false));
-            PowerMenu powerMenu = new PowerMenu.Builder(this)
-                    .addItemList(list) // list has "Novel", "Poetry", "Art"
-                    .setAnimation(MenuAnimation.SHOWUP_TOP_LEFT) // Animation start point (TOP | LEFT).
-                    .setMenuRadius(10f) // sets the corner radius.
-                    .setMenuShadow(10f) // sets the shadow.
-                    .setTextColor(ContextCompat.getColor(this, R.color.black))
-                    .setTextGravity(Gravity.CENTER)
-                    .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
-                    .setSelectedTextColor(Color.WHITE)
-                    .setMenuColor(Color.WHITE)
-                    .setSelectedMenuColor(ContextCompat.getColor(this, R.color.purple_500)).build();
-            powerMenu.setOnMenuItemClickListener(new OnMenuItemClickListener<PowerMenuItem>() {
-                @Override
-                public void onItemClick(int position, PowerMenuItem item) {
-                    powerMenu.dismiss();
-                    if(position==0)
-                        sortingType = 0;
-                    if (position==1)
-                        sortingType = 1;
-                    loadData();
-                }
-            });
-            powerMenu.showAsDropDown(view);
-
         }
     }
 }
