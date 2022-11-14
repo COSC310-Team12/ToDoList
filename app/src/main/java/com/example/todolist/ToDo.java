@@ -1,15 +1,11 @@
 package com.example.todolist;
 
-import android.content.Intent;
-
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 /*
@@ -102,40 +98,31 @@ public class ToDo implements Serializable {
     public boolean equals(Object o) {
         return getClass() == o.getClass() && uuid.equals(((ToDo) o).uuid);
     }
-    public static Comparator<ToDo> DueDateAscComparator= new Comparator<ToDo>() {
-        @Override
-        public int compare(ToDo t1, ToDo t2) {
+    public static Comparator<ToDo> DueDateAscComparator= (t1, t2) -> {
+        if(t1.getDate()==null)
+            return 1;
+        else if(t2.getDate()==null)
+            return -1;
+        else return t1.getDate().compareTo(t2.getDate());
+    };
+    public static Comparator<ToDo> DueDateDescComparator= (t1, t2) -> {
+        if(t1.getDate()==null)
+            return 1;
+        else if(t2.getDate()==null)
+            return -1;
+        else return t2.getDate().compareTo(t1.getDate());
+    };
+    public static Comparator<ToDo> TotalMarksComparator= (t1, t2) -> {
+        if (t2.getMaxGrade() - t1.getMaxGrade() > 0)
+            return 1;
+        else if ((t2.getMaxGrade() - t1.getMaxGrade() < 0))
+            return -1;
+        else { // if the total Grades are the same, then sort Ascendingly
             if(t1.getDate()==null)
                 return 1;
             else if(t2.getDate()==null)
                 return -1;
             else return t1.getDate().compareTo(t2.getDate());
-        }
-    };
-    public static Comparator<ToDo> DueDateDescComparator= new Comparator<ToDo>() {
-        @Override
-        public int compare(ToDo t1, ToDo t2) {
-            if(t1.getDate()==null)
-                return 1;
-            else if(t2.getDate()==null)
-                return -1;
-            else return t2.getDate().compareTo(t1.getDate());
-        }
-    };
-    public static Comparator<ToDo> TotalMarksComparator= new Comparator<ToDo>() {
-        @Override
-        public int compare(ToDo t1, ToDo t2) {
-            if (t2.getMaxGrade() - t1.getMaxGrade() > 0)
-                return 1;
-            else if ((t2.getMaxGrade() - t1.getMaxGrade() < 0))
-                return -1;
-            else { // if the total Grades are the same, then sort Ascendingly
-                if(t1.getDate()==null)
-                    return 1;
-                else if(t2.getDate()==null)
-                    return -1;
-                else return t1.getDate().compareTo(t2.getDate());
-            }
         }
     };
 }
