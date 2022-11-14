@@ -225,13 +225,15 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // Generate the list of all filters from all saved tasks
     private ArrayList<String> getFilterList() {
         ArrayList<String> out = new ArrayList<>();
-        out.add("Graded");
         out.add("Ungraded");
+        out.add("Graded");
         ArrayList<String> nonDefault = new ArrayList<>();
         for (ToDo toDo : toDoList) {
             loop:
 
             for (String tag : toDo.getTags()) {
+                if (tag.equals("Graded") || tag.equals("Ungraded"))
+                    continue;
                 for (String s : nonDefault)
                     if (s.equals(tag))
                         continue loop;
@@ -277,6 +279,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         // only allow user to add to-do if they entered text
         if (!isEmpty(inputToDo)) {
             ToDo newToDo = new ToDo(inputToDo.getText().toString());
+            // By default task is ungraded
+            newToDo.addTag("Ungraded");
             // adding user input to-do to array list
             toDoList.add(newToDo);
             // clearing user input after to-do is submitted
@@ -430,6 +434,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
             } else if(item.getTitle().equals("Set task as 'Graded'")) {
                 clickedToDo.addTag("Graded");
+                clickedToDo.removeTag("Ungraded");
                 Intent i = new Intent(this, totalGrade.class);
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));

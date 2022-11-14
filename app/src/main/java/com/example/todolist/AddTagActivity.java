@@ -73,7 +73,11 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        TagAdapter tagAdapter = new TagAdapter(toDo.getTags());
+        @SuppressWarnings("unchecked") ArrayList<String> tags = (ArrayList<String>) toDo.getTags().clone();
+        // Don't let the user change the ungraded tag
+        // They can delete the graded tag if they no longer wish for the task to be considered graded
+        tags.remove("Ungraded");
+        TagAdapter tagAdapter = new TagAdapter(tags);
         recyclerView.setAdapter(tagAdapter);
         tagAdapter.setClickListener(this);
     }
@@ -108,8 +112,11 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
 
     @Override
     public void onDeleteClick(View view, int position) {
-        System.out.println("DELETE");
-        toDo.removeTag(toDo.getTags().get(position));
+        String removedTag = toDo.getTags().get(position);
+        // if task is no longer graded, reset max grade
+        if (removedTag.equals("Graded"))
+            toDo.setMaxGrade(0);
+        toDo.removeTag(removedTag);
         setAdapter();
     }
 }
