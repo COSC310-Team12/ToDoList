@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private List<FilterPowerMenuItem> filterItems;
     private ArrayList<String> filterList = new ArrayList<>();
     private final HashMap<String, Boolean> filters = new HashMap<>();
-    private final static int EDIT_TODO_ACTIVITY_REQUEST = 1, ADD_TAGS_ACTIVITY_REQUEST = 2;
+    private final static int EDIT_TODO_ACTIVITY_REQUEST = 1, ADD_TAGS_ACTIVITY_REQUEST = 2, SET_MAX_GRADE_ACTIVITY_REQUEST = 3;
     private int newestCreatedToDo = -1;
     private MyScrollListener toDoScrollListener, completedScrollListener;
     private FloatingActionButton toTopButton;
@@ -467,11 +467,11 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 i.putExtra("tagName",""); // default tag(empty string)
                 startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
             } else if(item.getTitle().equals("Set task as 'Graded'")) {
-                Intent i = new Intent(this, AddTagActivity.class);
+                clickedToDo.addTag("Graded");
+                Intent i = new Intent(this, totalGrade.class);
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
-                i.putExtra("tagName","Graded"); // This is the tag that will be added to the activity if this is selected.
-                startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
+                startActivityForResult(i, EDIT_TODO_ACTIVITY_REQUEST);
             } else if(item.getTitle().equals("Enter Grade Received")) { // This will show up only for Graded ToDos.
                 Intent i=new Intent(this,GradeReceived.class);
                 i.putExtra("ToDoList", toDoList);

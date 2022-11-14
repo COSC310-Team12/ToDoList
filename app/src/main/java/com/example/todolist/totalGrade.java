@@ -27,7 +27,7 @@ public class totalGrade extends AppCompatActivity {
         toDoIndex=toDoIndex = intent.getIntExtra("Index", 0);
         title=(TextView) findViewById(R.id.totalGradeTitle);
         totalGradeInput=(EditText) findViewById(R.id.totalGradeInput);
-        title.setText("Enter Total Grade for "+intent.getStringExtra("todo"));
+        title.setText("Enter Total Grade for "+toDoList.get(toDoIndex).getText());
     }
     public void submitTotalGrade(View view){
         float totalGrade=Float.parseFloat(totalGradeInput.getText().toString());
@@ -35,7 +35,7 @@ public class totalGrade extends AppCompatActivity {
         ToDo toDo=toDoList.get(toDoIndex); // obtains the corresponding toDo
         toDo.setMaxGrade(totalGrade);
         System.out.println(toDo.getMaxGrade());
-        //toDo.addTag("Graded");
+        setResult(RESULT_OK, new Intent().putExtra("ToDoList", toDoList));
         finish();
     }
 }
