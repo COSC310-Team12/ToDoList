@@ -11,6 +11,7 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,6 +56,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.skydoves.powermenu.CustomPowerMenu;
 import com.skydoves.powermenu.MenuAnimation;
+import com.skydoves.powermenu.OnMenuItemClickListener;
 import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 
@@ -104,6 +106,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private FloatingActionButton toTopButton;
     private final boolean[] toTop = new boolean[2];
     private int toTopControl = 0; // 0: controlling incomplete list; 1: controlling completed list
+    private int sortingType=0; // this is used to control the sort of the tasks.
+
 
 
     // initialization code
@@ -693,6 +697,35 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             netScrollY = Math.max(0, netScrollY + dy);
             if (oldPos == 0 || netScrollY == 0)
                 gotoTopBottomSwap();
+        }
+        public void onSort(View view){
+            ArrayList<PowerMenuItem> list=new ArrayList<>();
+            list.add(new PowerMenuItem("Ascending",false));
+            list.add(new PowerMenuItem("Descending",false));
+            PowerMenu powerMenu = new PowerMenu.Builder(this)
+                    .addItemList(list) // list has "Novel", "Poetry", "Art"
+                    .setAnimation(MenuAnimation.SHOWUP_TOP_LEFT) // Animation start point (TOP | LEFT).
+                    .setMenuRadius(10f) // sets the corner radius.
+                    .setMenuShadow(10f) // sets the shadow.
+                    .setTextColor(ContextCompat.getColor(this, R.color.black))
+                    .setTextGravity(Gravity.CENTER)
+                    .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                    .setSelectedTextColor(Color.WHITE)
+                    .setMenuColor(Color.WHITE)
+                    .setSelectedMenuColor(ContextCompat.getColor(this, R.color.purple_500)).build();
+            powerMenu.setOnMenuItemClickListener(new OnMenuItemClickListener<PowerMenuItem>() {
+                @Override
+                public void onItemClick(int position, PowerMenuItem item) {
+                    powerMenu.dismiss();
+                    if(position==0)
+                        sortingType = 0;
+                    if (position==1)
+                        sortingType = 1;
+                    loadData();
+                }
+            });
+            powerMenu.showAsDropDown(view);
+
         }
     }
 }

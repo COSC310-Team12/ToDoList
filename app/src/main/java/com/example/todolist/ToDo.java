@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -101,5 +102,25 @@ public class ToDo implements Serializable {
     public boolean equals(Object o) {
         return getClass() == o.getClass() && uuid.equals(((ToDo) o).uuid);
     }
+    public static Comparator<ToDo> DueDateAscComparator= new Comparator<ToDo>() {
+        @Override
+        public int compare(ToDo t1, ToDo t2) {
+            if(t1.getDate()==null)
+                return 1;
+            else if(t2.getDate()==null)
+                return -1;
+            else return t1.getDate().compareTo(t2.getDate());
+        }
+    };
+    public static Comparator<ToDo> DueDateDescComparator= new Comparator<ToDo>() {
+        @Override
+        public int compare(ToDo t1, ToDo t2) {
+            if(t1.getDate()==null)
+                return 1;
+            else if(t2.getDate()==null)
+                return -1;
+            else return t2.getDate().compareTo(t1.getDate());
+        }
+    };
 }
 
