@@ -31,9 +31,11 @@ public class totalGrade extends AppCompatActivity {
     }
     public void submitTotalGrade(View view){
         float totalGrade=Float.parseFloat(totalGradeInput.getText().toString());
+        System.out.println("Total GRADE: "+totalGrade);
         ToDo toDo=toDoList.get(toDoIndex); // obtains the corresponding toDo
         toDo.setMaxGrade(totalGrade);
-        toDo.addTag("Graded");
+        System.out.println(toDo.getMaxGrade());
+        //toDo.addTag("Graded");
         finish();
     }
 }

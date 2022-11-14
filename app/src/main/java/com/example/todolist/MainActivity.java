@@ -419,6 +419,11 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
                 i.putExtra("tagName","Graded"); // This is the tag that will be added to the activity if this is selected.
                 startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
+            } else if(item.getTitle().equals("Enter Grade Received")) { // This will show up only for Graded ToDos.
+                Intent i=new Intent(this,GradeReceived.class);
+                i.putExtra("ToDoList", toDoList);
+                i.putExtra("Index", toDoList.indexOf(clickedToDo));
+                startActivity(i);
             }
         });
         powerMenu.showAsAnchorRightBottom(view); // view is where the menu is anchored
