@@ -111,6 +111,12 @@
                 android:text="@string/submit" />
         </LinearLayout>
 
+        <CheckBox
+            android:id="@+id/Notify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notify when overdue?" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
