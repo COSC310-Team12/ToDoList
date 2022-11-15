@@ -45,10 +45,6 @@ is a custom ViewHolder.
 **TagClickListener** is an interface implemented by the **AddTagActivity**.
 It contains the onDeleteClick() method.
 
-**GradeReceieved** is an activity where the user can enter the grade they receieved on an assignemnt
-
-**totalGrade** is an activty where the user can input grade weight of an assignment.
-
 Test code is contained in **EditToDoActivityUnitTest**
 
 ## Documentation for Assignment 3
@@ -97,6 +93,7 @@ Since our system already had a GUI, we made improvements to the existing GUI. We
 
 #### App notifications - New feature 3
 - ️The user can now setup to receive notifications if a certain task is due soon or overdue. This implementation uses the open-source android library Notification & Notification Manager to create pop-up notifications & lock screen notifications. This provides meaningful warnings & information to our users allowing them to complete their objectives in a timely manner.  
+<img src ="https://user-images.githubusercontent.com/52676747/201796968-0e7b5aba-d0d1-4b54-9b3c-f06e339d5e62.PNG" alt="contextMenu" width="100"/> <img src ="https://user-images.githubusercontent.com/52676747/201797007-e4eab925-63fb-49d5-a782-2cecd68d86e5.PNG" alt="contextMenu" width="100"/><img src ="https://user-images.githubusercontent.com/52676747/201797599-498e03e7-769c-4042-aac1-17d082e48bd0.PNG" alt="contextMenu" width="100"/>
 
 #### Added navigation features to the main list - New feature 4
 - The list now automatically scrolls to the bottom to show newly added tasks. This makes the app easier to use because users can see and edit their tasks immediately after adding them instead of having to scroll down.
