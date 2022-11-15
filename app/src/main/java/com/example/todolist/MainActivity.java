@@ -2,10 +2,14 @@ package com.example.todolist;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -49,6 +53,7 @@ import java.util.Set;
 This class controls the main screen. It extends our custom ToDoClickListener.
 */
 
+@SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity implements ToDoClickListener {
 
     private ArrayList<ToDo> toDoList, completed, filtered;
@@ -56,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private boolean showCompleted = false, showIncomplete = true;
     private ImageView dropdownIcon, dropdownIcon2;
     private EditText inputToDo;
+
     private SearchView searchView;
     private List<FilterPowerMenuItem> filterItems;
     private ArrayList<String> filterList = new ArrayList<>();
@@ -66,6 +72,9 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private FloatingActionButton toTopButton;
     private final boolean[] toTop = new boolean[2];
     private int toTopControl = 0; // 0: controlling incomplete list; 1: controlling completed list
+    private int sortingType=0; // this is used to control the sort of the tasks.
+
+
 
     // initialization code
     @Override
@@ -73,8 +82,18 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Creates the notification channel that can be toggled on in the app info settings - Default is off.
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            NotificationChannel channel = new NotificationChannel("NotifyLate", "Late Task Notification", NotificationManager.IMPORTANCE_HIGH);
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
         toDoRecyclerView = findViewById(R.id.toDoRecyclerView);
         completedRecyclerView = findViewById(R.id.completedRecyclerView);
+
         inputToDo = findViewById(R.id.inputToDo);
         dropdownIcon = findViewById(R.id.dropdownIcon);
         dropdownIcon2 = findViewById(R.id.dropdownIcon2);
@@ -116,6 +135,36 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         loadData();
     }
 
+    public void onSort(View view){
+        ArrayList<PowerMenuItem> list=new ArrayList<>();
+        list.add(new PowerMenuItem("Ascending Due Date",false));
+        list.add(new PowerMenuItem("Descending Due Date",false));
+        list.add(new PowerMenuItem("Total Marks",false));
+        PowerMenu powerMenu = new PowerMenu.Builder(this)
+                .addItemList(list) // list has "Novel", "Poetry", "Art"
+                .setAnimation(MenuAnimation.SHOWUP_TOP_LEFT) // Animation start point (TOP | LEFT).
+                .setMenuRadius(10f) // sets the corner radius.
+                .setMenuShadow(10f) // sets the shadow.
+                .setTextColor(ContextCompat.getColor(this, R.color.black))
+                .setTextGravity(Gravity.CENTER)
+                .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                .setSelectedTextColor(Color.WHITE)
+                .setMenuColor(Color.WHITE)
+                .setSelectedMenuColor(ContextCompat.getColor(this, R.color.purple_500)).build();
+        powerMenu.setOnMenuItemClickListener((position, item) -> {
+            powerMenu.dismiss();
+            if(position==0)
+                sortingType = 0;
+            if (position==1)
+                sortingType = 1;
+            if(position==2)
+                sortingType=2;
+            loadData();
+        });
+        powerMenu.showAsDropDown(view);
+
+    }
+
     @SuppressWarnings("unchecked")
     private void loadData() {
         // Read in from file
@@ -126,12 +175,11 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 throw new FileNotFoundException("Not loading from file for debug purposes. To change this behavior, change LOAD_FROM_FILE to true");
             // try loading from saved file
             toDoList = (ArrayList<ToDo>) in.readObject();
-        } catch (FileNotFoundException | ClassNotFoundException e) {
+        } catch (Exception e) {
             // load defaults
             toDoList = new ArrayList<>();
             // save new state
             save();
-        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -154,20 +202,38 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             else if (toDo.isDone() && filterAllows(toDo))
                 completed.add(toDo);
         }
-
+        if(sortingType==0) {
+            Collections.sort(filtered, ToDo.DueDateAscComparator);
+            Collections.sort(completed, ToDo.DueDateAscComparator);
+        }
+        if(sortingType==1) {
+            Collections.sort(filtered, ToDo.DueDateDescComparator);
+            Collections.sort(completed, ToDo.DueDateDescComparator);
+        }
+        if(sortingType==2){
+            for (ToDo task: filtered
+                 ) {
+                System.out.println(task.getText()+" total: "+task.getMaxGrade());
+                System.out.println(task.getText()+" Received: "+task.getGradeReceived());
+            }
+            Collections.sort(filtered, ToDo.TotalMarksComparator);
+            Collections.sort(completed, ToDo.TotalMarksComparator);
+        }
         setAdapter();
     }
 
     // Generate the list of all filters from all saved tasks
     private ArrayList<String> getFilterList() {
         ArrayList<String> out = new ArrayList<>();
-        out.add("Graded");
         out.add("Ungraded");
+        out.add("Graded");
         ArrayList<String> nonDefault = new ArrayList<>();
         for (ToDo toDo : toDoList) {
             loop:
 
             for (String tag : toDo.getTags()) {
+                if (tag.equals("Graded") || tag.equals("Ungraded"))
+                    continue;
                 for (String s : nonDefault)
                     if (s.equals(tag))
                         continue loop;
@@ -213,17 +279,19 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         // only allow user to add to-do if they entered text
         if (!isEmpty(inputToDo)) {
             ToDo newToDo = new ToDo(inputToDo.getText().toString());
+            // By default task is ungraded
+            newToDo.addTag("Ungraded");
             // adding user input to-do to array list
             toDoList.add(newToDo);
             // clearing user input after to-do is submitted
             inputToDo.getText().clear();
-            // Clear search
-            searchView.setQuery("",true);
+            // save changes
+            save();
             // Clear filters
             for (String key : filters.keySet())
                 filters.put(key,false);
-            // save changes
-            save();
+            // Clear search
+            searchView.setQuery("",true);
             loadData();
             // Make sure incomplete tasks list is open, not completed tasks
             if (!showIncomplete)
@@ -234,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             toDoRecyclerView.scrollToPosition(newestCreatedToDo);
         } else {
             // ask the user to enter a name for the task
-            Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Please enter a task name", Snackbar.LENGTH_LONG).show();
+            makeNotification("Please enter a task name");
         }
     }
 
@@ -307,6 +375,10 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         itemList.add(new PowerMenuItem("Edit", false));
         itemList.add(new PowerMenuItem("Edit Tags", false));
         itemList.add(new PowerMenuItem("Delete", false));
+        itemList.add(new PowerMenuItem("Set task as 'Graded'",false));
+        if(clickedToDo.getTags().contains("Graded")){
+            itemList.add(new PowerMenuItem("Enter Grade Received",false));
+        }
 
         PowerMenu powerMenu = new PowerMenu.Builder(this)
                 .addItemList(itemList)
@@ -360,6 +432,18 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
                 startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
+            } else if(item.getTitle().equals("Set task as 'Graded'")) {
+                clickedToDo.addTag("Graded");
+                clickedToDo.removeTag("Ungraded");
+                Intent i = new Intent(this, totalGrade.class);
+                i.putExtra("ToDoList", toDoList);
+                i.putExtra("Index", toDoList.indexOf(clickedToDo));
+                startActivityForResult(i, EDIT_TODO_ACTIVITY_REQUEST);
+            } else if(item.getTitle().equals("Enter Grade Received")) { // This will show up only for Graded ToDos.
+                Intent i=new Intent(this,GradeReceived.class);
+                i.putExtra("ToDoList", toDoList);
+                i.putExtra("Index", toDoList.indexOf(clickedToDo));
+                startActivityForResult(i,EDIT_TODO_ACTIVITY_REQUEST);
             }
         });
         powerMenu.showAsAnchorRightBottom(view); // view is where the menu is anchored
@@ -459,6 +543,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     public void makeNotification(String msg) {
         Snackbar sb = Snackbar.make(findViewById(R.id.myCoordinatorLayout), msg, Snackbar.LENGTH_LONG);
         sb.show();
+
     }
 
     // Called when the user clicks the filter button

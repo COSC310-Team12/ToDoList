@@ -1,9 +1,11 @@
 package com.example.todolist;
 
+import androidx.annotation.NonNull;
+
 // Class the defines each item in a PowerMenu. This one is for the filter menu on the main activity
 public class FilterPowerMenuItem {
     private String title;
-    private boolean checked = false;
+    private boolean checked;
 
     public FilterPowerMenuItem(String title, Boolean checked) {
         this.title = title;
@@ -26,6 +28,7 @@ public class FilterPowerMenuItem {
         this.checked = checked;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "FilterPowerMenuItem{" +

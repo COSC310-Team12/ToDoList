@@ -4,9 +4,8 @@ import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 /*
@@ -18,7 +17,10 @@ public class ToDo implements Serializable {
     private String text;
     private boolean done;
     private Date date;
+    private float maxGrade;
+    private float gradeReceived;
     private final ArrayList<String> tags = new ArrayList<>();
+
 
     public ToDo(String text) {
         this.text = text;
@@ -56,9 +58,18 @@ public class ToDo implements Serializable {
         this.date = date;
     }
 
+    public float getMaxGrade() { return maxGrade; }
+
+    public void setMaxGrade(float maxGrade) { this.maxGrade = maxGrade; }
+
+    public float getGradeReceived() { return gradeReceived; }
+
+    public void setGradeReceived(float gradeReceived) { this.gradeReceived = gradeReceived; }
+
     public boolean addTag(String tag) {
-        if (!tag.equals(""))
+        if (!tag.equals("")) {
             tags.add(tag);
+        }
         else
             return false;
         return true;
@@ -87,5 +98,32 @@ public class ToDo implements Serializable {
     public boolean equals(Object o) {
         return getClass() == o.getClass() && uuid.equals(((ToDo) o).uuid);
     }
+    public static Comparator<ToDo> DueDateAscComparator= (t1, t2) -> {
+        if(t1.getDate()==null)
+            return 1;
+        else if(t2.getDate()==null)
+            return -1;
+        else return t1.getDate().compareTo(t2.getDate());
+    };
+    public static Comparator<ToDo> DueDateDescComparator= (t1, t2) -> {
+        if(t1.getDate()==null)
+            return 1;
+        else if(t2.getDate()==null)
+            return -1;
+        else return t2.getDate().compareTo(t1.getDate());
+    };
+    public static Comparator<ToDo> TotalMarksComparator= (t1, t2) -> {
+        if (t2.getMaxGrade() - t1.getMaxGrade() > 0)
+            return 1;
+        else if ((t2.getMaxGrade() - t1.getMaxGrade() < 0))
+            return -1;
+        else { // if the total Grades are the same, then sort Ascendingly
+            if(t1.getDate()==null)
+                return 1;
+            else if(t2.getDate()==null)
+                return -1;
+            else return t1.getDate().compareTo(t2.getDate());
+        }
+    };
 }
 
