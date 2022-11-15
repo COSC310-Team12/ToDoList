@@ -25,7 +25,7 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
     private int toDoIndex;
     private ToDo toDo;
     private CoordinatorLayout snackbarPlaceholder;
-    private String tagName;
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +37,6 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         //noinspection unchecked
         toDoList = (ArrayList<ToDo>) intent.getSerializableExtra("ToDoList");
         toDoIndex = intent.getIntExtra("Index", 0);
-        tagName=intent.getStringExtra("tagName");
         toDo = toDoList.get(toDoIndex);
 
         tagNameEditText = findViewById(R.id.editTextTagName);
@@ -46,10 +45,6 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         recyclerView = findViewById(R.id.toDoRecyclerView);
         TextView activityTitle1 = findViewById(R.id.addTagsTitle);
         snackbarPlaceholder = findViewById(R.id.myCoordinatorLayout);
-
-        tagName=intent.getStringExtra("tagName");
-        if(tagName.equals("Graded")) // This is used to created the "Graded" tag for ToDos that are marked.
-             tagNameEditText.setText("Graded");
 
         String activityTitle = toDo.getText();
         if (activityTitle.length() > 25) {
@@ -78,7 +73,11 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        TagAdapter tagAdapter = new TagAdapter(toDo.getTags());
+        @SuppressWarnings("unchecked") ArrayList<String> tags = (ArrayList<String>) toDo.getTags().clone();
+        // Don't let the user change the ungraded tag
+        // They can delete the graded tag if they no longer wish for the task to be considered graded
+        tags.remove("Ungraded");
+        TagAdapter tagAdapter = new TagAdapter(tags);
         recyclerView.setAdapter(tagAdapter);
         tagAdapter.setClickListener(this);
     }
@@ -90,7 +89,7 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
             if (!toDo.getTags().contains(tag)) {
                 toDo.addTag(tag);
                 setAdapter();
-                if(tag.equals("Graded")){ // In case the tag added is graded, then we want to get the total possible Grade for th given todo so we call Activity totalGrade.class
+                if(tag.equals("Graded")){ // In case the tag added is graded, then we want to get the total possible Grade for th given to do so we call Activity totalGrade.class
                     Intent intent=new Intent(this,totalGrade.class);
                     intent.putExtra("ToDoList", toDoList);
                     intent.putExtra("Index",toDoIndex);
@@ -113,8 +112,11 @@ public class AddTagActivity extends AppCompatActivity implements TagClickListene
 
     @Override
     public void onDeleteClick(View view, int position) {
-        System.out.println("DELETE");
-        toDo.removeTag(toDo.getTags().get(position));
+        String removedTag = toDo.getTags().get(position);
+        // if task is no longer graded, reset max grade
+        if (removedTag.equals("Graded"))
+            toDo.setMaxGrade(0);
+        toDo.removeTag(removedTag);
         setAdapter();
     }
 }

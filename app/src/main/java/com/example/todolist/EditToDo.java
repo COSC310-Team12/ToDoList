@@ -5,10 +5,8 @@ import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -36,9 +34,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Objects;
 import java.util.Date;
+import java.util.Objects;
 
 /*
 This class controls the edit to-do page. Users can navigate to this page by clicking on a to-do
@@ -166,21 +163,18 @@ public class EditToDo extends AppCompatActivity {
             return true;
         });
 
-        notify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(notify.isChecked()){
-                    if (ContextCompat.checkSelfPermission(EditToDo.this,
-                            Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                        notificationOn = true;
-                    }
-                    else{
-                        requestPermissions();
-                    }
+        notify.setOnClickListener(v -> {
+            if(notify.isChecked()){
+                if (ContextCompat.checkSelfPermission(EditToDo.this,
+                        Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                    notificationOn = true;
                 }
                 else{
-                    notificationOn = false;
+                    requestPermissions();
                 }
+            }
+            else{
+                notificationOn = false;
             }
         });
     }
@@ -309,19 +303,8 @@ public class EditToDo extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setTitle("Notification Permission")
                     .setMessage("Todo would like to send you notifications when a task is due soon or past-due")
-                    .setPositiveButton("Agree", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(EditToDo.this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, RequestPermission);
-
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
+                    .setPositiveButton("Agree", (dialog, which) -> ActivityCompat.requestPermissions(EditToDo.this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, RequestPermission))
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                     .create().show();
 
 

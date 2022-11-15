@@ -1,52 +1,28 @@
 package com.example.todolist;
 
-
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.AlarmManager;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Typeface;
-import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
-
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-
-import android.widget.Toast;
-
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -56,7 +32,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.skydoves.powermenu.CustomPowerMenu;
 import com.skydoves.powermenu.MenuAnimation;
-import com.skydoves.powermenu.OnMenuItemClickListener;
 import com.skydoves.powermenu.PowerMenu;
 import com.skydoves.powermenu.PowerMenuItem;
 
@@ -67,24 +42,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.PortUnreachableException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
-
-import java.util.Calendar;
-import java.util.concurrent.ExecutorService;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 
-
 /*
 This class controls the main screen. It extends our custom ToDoClickListener.
 */
 
+@SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity implements ToDoClickListener {
 
     private ArrayList<ToDo> toDoList, completed, filtered;
@@ -92,10 +61,6 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private boolean showCompleted = false, showIncomplete = true;
     private ImageView dropdownIcon, dropdownIcon2;
     private EditText inputToDo;
-
-    NotificationManagerCompat notificationManagerCompat;
-    android.app.Notification notification;
-    private int RequestPermission = 1;
 
     private SearchView searchView;
     private List<FilterPowerMenuItem> filterItems;
@@ -186,18 +151,15 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 .setSelectedTextColor(Color.WHITE)
                 .setMenuColor(Color.WHITE)
                 .setSelectedMenuColor(ContextCompat.getColor(this, R.color.purple_500)).build();
-        powerMenu.setOnMenuItemClickListener(new OnMenuItemClickListener<PowerMenuItem>() {
-            @Override
-            public void onItemClick(int position, PowerMenuItem item) {
-                powerMenu.dismiss();
-                if(position==0)
-                    sortingType = 0;
-                if (position==1)
-                    sortingType = 1;
-                if(position==2)
-                    sortingType=2;
-                loadData();
-            }
+        powerMenu.setOnMenuItemClickListener((position, item) -> {
+            powerMenu.dismiss();
+            if(position==0)
+                sortingType = 0;
+            if (position==1)
+                sortingType = 1;
+            if(position==2)
+                sortingType=2;
+            loadData();
         });
         powerMenu.showAsDropDown(view);
 
@@ -263,13 +225,15 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     // Generate the list of all filters from all saved tasks
     private ArrayList<String> getFilterList() {
         ArrayList<String> out = new ArrayList<>();
-        out.add("Graded");
         out.add("Ungraded");
+        out.add("Graded");
         ArrayList<String> nonDefault = new ArrayList<>();
         for (ToDo toDo : toDoList) {
             loop:
 
             for (String tag : toDo.getTags()) {
+                if (tag.equals("Graded") || tag.equals("Ungraded"))
+                    continue;
                 for (String s : nonDefault)
                     if (s.equals(tag))
                         continue loop;
@@ -315,17 +279,19 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         // only allow user to add to-do if they entered text
         if (!isEmpty(inputToDo)) {
             ToDo newToDo = new ToDo(inputToDo.getText().toString());
+            // By default task is ungraded
+            newToDo.addTag("Ungraded");
             // adding user input to-do to array list
             toDoList.add(newToDo);
             // clearing user input after to-do is submitted
             inputToDo.getText().clear();
-            // Clear search
-            searchView.setQuery("",true);
+            // save changes
+            save();
             // Clear filters
             for (String key : filters.keySet())
                 filters.put(key,false);
-            // save changes
-            save();
+            // Clear search
+            searchView.setQuery("",true);
             loadData();
             // Make sure incomplete tasks list is open, not completed tasks
             if (!showIncomplete)
@@ -465,10 +431,10 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 // send toDoList so that we can edit it there, then reload it when returning to main activity
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
-                i.putExtra("tagName",""); // default tag(empty string)
                 startActivityForResult(i, ADD_TAGS_ACTIVITY_REQUEST);
             } else if(item.getTitle().equals("Set task as 'Graded'")) {
                 clickedToDo.addTag("Graded");
+                clickedToDo.removeTag("Ungraded");
                 Intent i = new Intent(this, totalGrade.class);
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
