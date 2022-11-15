@@ -90,7 +90,7 @@ public class EditTagActivity extends AppCompatActivity implements TagClickListen
                 toDo.addTag(tag);
                 setAdapter();
                 if(tag.equals("Graded")){ // In case the tag added is graded, then we want to get the total possible Grade for th given to do so we call Activity totalGrade.class
-                    Intent intent=new Intent(this,totalGrade.class);
+                    Intent intent=new Intent(this, TotalGradeActivity.class);
                     intent.putExtra("ToDoList", toDoList);
                     intent.putExtra("Index",toDoIndex);
                     intent.putExtra("todo",toDo.getText());

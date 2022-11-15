@@ -47,9 +47,9 @@ is a custom ViewHolder.
 **TagClickListener** is an interface implemented by the **AddTagActivity**.
 It contains the onDeleteClick() method.
 
-**GradeReceived** is an activity where the user can enter the grade they receieved on an assignemnt
+**GradeReceived** is an activity where the user can enter the grade they received on an assignment
 
-**TotalGrade** is an activty where the user can input grade weight of an assignment.
+**TotalGradeActivity** is an activity where the user can input grade weight of an assignment.
 
 **NotificationSender** is a class that handles sending the notification when the application is not running. It is all back-end and the user does not directly touch it
 
@@ -73,8 +73,8 @@ Since our system already had a GUI, we made improvements to the existing GUI. We
 - Users are able to sort their tasks by due date. They can sort them by due date ascending or descending.
 <img src="https://user-images.githubusercontent.com/77038122/201797367-33f34ba7-7131-4092-ae2e-49ae8238709c.png" alt="sorting menu" width="100"/>
 
-#### Automatically classify tasks as graded or ungrded - Limitation fix 4
-- Tasks are by default considered ungraded unil the user sets them as graded at which time the tag automatically changes to graded
+#### Automatically classify tasks as graded or ungraded - Limitation fix 4
+- Tasks are by default considered ungraded until the user sets them as graded at which time the tag automatically changes to graded
 
 #### Added filtering by tags
 - users can sort tasks based on tags. This feature helps users organize their tasks.
@@ -93,7 +93,7 @@ Since our system already had a GUI, we made improvements to the existing GUI. We
 ### Features that use open-source libraries to improve the functionality of the system
 
 #### Added tags - New feature 1
-- users can now classify their tasks using tags. Tags are implemented using, among others the AndroidX Library. Tags improve our system because they give the user the option to categorize their tasks. We used a library called RecyclerView for implenting the list of active tags on a task. This one of the libraries available in the Android library, but it was a steep learning curve to be able use it. Many hours were spent by multiple team members in order to understand how to use RecyclerView.
+- users can now classify their tasks using tags. Tags are implemented using, among others the AndroidX Library. Tags improve our system because they give the user the option to categorize their tasks. We used a library called RecyclerView for implementing the list of active tags on a task. This one of the libraries available in the Android library, but it was a steep learning curve to be able use it. Many hours were spent by multiple team members in order to understand how to use RecyclerView.
 <img src="https://user-images.githubusercontent.com/77898527/200717171-08738099-3592-425b-9bb1-6eaeb21d4fd5.png" alt="addTags" width="100"/>
 
 #### Added context menu - New feature 2
@@ -107,7 +107,7 @@ Since our system already had a GUI, we made improvements to the existing GUI. We
 
 #### Added navigation features to the main list - New feature 4
 - The list now automatically scrolls to the bottom to show newly added tasks. This makes the app easier to use because users can see and edit their tasks immediately after adding them instead of having to scroll down.
-- The newly added task briefly flashes a gray color so that it is cear to the user where their new task was added. This uses a TransitionDrawable object as the background of the task in order to animate it.
+- The newly added task briefly flashes a gray color so that it is clear to the user where their new task was added. This uses a TransitionDrawable object as the background of the task in order to animate it.
 - Users can use the gray button on the right to quickly navigate between the top and bottom of the list. This feature improves the efficiency of use for our app. Users can now easily navigate to their recent tasks at the bottom and back up to the search bar and the filter menu. This uses a floating button from the google android material library in order to keep the button in the same spot on the screen regardless of how far the user has scrolled.
 <img src="https://user-images.githubusercontent.com/77038122/201798552-ebeaf824-acf6-4fa1-9600-a84d1960c1c8.png" alt="viewCompleted" width="100"/>
 

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 /*
 This Activity is used to get the total possible grade for a Graded Task whenever we set a Task as Graded.
  */
-public class totalGrade extends AppCompatActivity {
+public class TotalGradeActivity extends AppCompatActivity {
     private EditText totalGradeInput;
     private ArrayList<ToDo> toDoList;
     private int toDoIndex;
@@ -30,7 +30,7 @@ public class totalGrade extends AppCompatActivity {
         title.setText(String.format("Enter Total Grade for %s", toDoList.get(toDoIndex).getText()));
         totalGradeInput.setOnEditorActionListener((textView, i, keyEvent) -> {
             if (i == 6 || keyEvent.getAction() == 0) {
-                totalGrade.this.submitTotalGrade(textView);
+                TotalGradeActivity.this.submitTotalGrade(textView);
             }
             return true;
         });

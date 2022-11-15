@@ -435,7 +435,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             } else if(item.getTitle().equals("Set task as 'Graded'")) {
                 clickedToDo.addTag("Graded");
                 clickedToDo.removeTag("Ungraded");
-                Intent i = new Intent(this, totalGrade.class);
+                Intent i = new Intent(this, TotalGradeActivity.class);
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
                 startActivityForResult(i, EDIT_TODO_ACTIVITY_REQUEST);
