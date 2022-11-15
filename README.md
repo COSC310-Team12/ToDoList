@@ -49,6 +49,8 @@ It contains the onDeleteClick() method.
 
 **totalGrade** is an activty where the user can input grade weight of an assignment.
 
+**NotificationSender** is a class that handles sending the notification when the application is not running. It is all back-end and the user does not directly touch it
+
 Test code is contained in **EditToDoActivityUnitTest**
 
 ## Documentation for Assignment 3
