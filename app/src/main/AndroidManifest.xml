@@ -16,14 +16,14 @@
         tools:targetApi="tiramisu">
 
         <activity
-            android:name=".AddTagActivity"
+            android:name=".EditTagActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".EditToDo"
+            android:name=".EditToDoActivity"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
