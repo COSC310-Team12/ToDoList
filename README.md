@@ -4,13 +4,15 @@
 This is the repository for our COSC310 project. We are creating an Android to-do list app for students.
 
 ## Class structure
-All layout code is stored in the layout folder as six xml files.
+All layout code is stored in the layout folder as eight xml files.
 - activity_main.xml contains the layout for our main screen, including a RecyclerView for to-do items
 - todo_item.xml is the layout of an individual to-do item, which are used to populate the RecyclerView
 - activity_edit_todo.xml contains the layout for the edit to-do page that users can reach through the context menu after clicking on a to-do
 - activity_edit_tag.xml contains the layout for the edit tag screen that users can reach through the context menu after clicking on a to-do
 - tag_item.xml is the layout of an individual tag item
 - filter_menu_item.xml contains the layout of an individual filter item
+- activity_total_grade.xml is the layout for the max grade input page
+- activity_grade_received.xml is the layout for the grade received page
 
 All functional code is contained in .java files in the todolist folder.
 
@@ -45,9 +47,9 @@ is a custom ViewHolder.
 **TagClickListener** is an interface implemented by the **AddTagActivity**.
 It contains the onDeleteClick() method.
 
-**GradeReceieved** is an activity where the user can enter the grade they receieved on an assignemnt
+**GradeReceived** is an activity where the user can enter the grade they receieved on an assignemnt
 
-**totalGrade** is an activty where the user can input grade weight of an assignment.
+**TotalGrade** is an activty where the user can input grade weight of an assignment.
 
 **NotificationSender** is a class that handles sending the notification when the application is not running. It is all back-end and the user does not directly touch it
 
