@@ -64,7 +64,8 @@ Since our system already had a GUI, we made improvements to the existing GUI. We
 #### Sorting tasks by their due date - Limitation fix 3
 - Users are able to sort their tasks by due date. They can sort them by due date ascending or descending.
 
-#### TBD - Limitation fix 4 ⚠️⚠️⚠️⚠️⚠️
+#### Automatically classify tasks as graded or ungrded - Limitation fix 4
+- Tasks are by default considered ungraded unil the user sets them as graded at which time the tag automatically changes to graded
 
 #### Added filtering by tags
 - users can sort tasks based on tags. This feature helps users organize their tasks.
@@ -80,12 +81,6 @@ Since our system already had a GUI, we made improvements to the existing GUI. We
 #### Refactored the way persistence is implemented
 - Changed the way that tasks are stored to the disk. There is only one list of tasks being saved now. This makes the code easier to work with because we don't need to always be checking multiple lists when performing operations. This still is a problem to an extent, but is easier to manage.
 
-#### Changed list behaviour on adding task
-- The list now automatically scrolls to the bottom to show newly added tasks. This makes the app easier to use because users can see and edit their tasks immediately after adding them instead of having to scroll down.
-
-#### Added button to conveniently navigate the list
-- Users can use the gray button on the right to quickly navigate between the top and bottom of the list. This feature improves the efficiency of use for our app. Users can now easily navigate to their recent tasks at the bottom and back up to the search bar and the filter menu.
-
 ### Features that use open-source libraries to improve the functionality of the system
 
 #### Added tags - New feature 1
@@ -99,8 +94,13 @@ Since our system already had a GUI, we made improvements to the existing GUI. We
 #### App notifications - New feature 3
 - ️The user can now setup to receive notifications if a certain task is due soon or overdue. This implementation uses the open-source android library Notification & Notification Manager to create pop-up notifications & lock screen notifications. This provides meaningful warnings & information to our users allowing them to complete their objectives in a timely manner.  
 
+#### Added navigation features to the main list - New feature 4
+- The list now automatically scrolls to the bottom to show newly added tasks. This makes the app easier to use because users can see and edit their tasks immediately after adding them instead of having to scroll down.
+- The newly added task briefly flashes a gray color so that it is cear to the user where their new task was added. This uses a TransitionDrawable object as the background of the task in order to animate it.
+- Users can use the gray button on the right to quickly navigate between the top and bottom of the list. This feature improves the efficiency of use for our app. Users can now easily navigate to their recent tasks at the bottom and back up to the search bar and the filter menu. This uses a floating button from the google android material library in order to keep the button in the same spot on the screen regardless of how far the user has scrolled.
+
 ## Compiling our code
 There are two ways to compile our code:
 1) clone the project in Android studio and run it on an emulator in the app
-2) use the [apk file](https://github.com/COSC310-Team12/ToDoList/releases/download/v0.1.0/ToDoList-v0.1.0.apk) from our latest [release](https://github.com/COSC310-Team12/ToDoList/releases) to install the app on an Android phone
+2) use the [apk file](https://github.com/COSC310-Team12/ToDoList/releases/download/v0.2.0/ToDoList-v0.2.0.apk) from our latest [release](https://github.com/COSC310-Team12/ToDoList/releases) to install the app on an Android phone
 
