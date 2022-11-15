@@ -45,6 +45,10 @@ is a custom ViewHolder.
 **TagClickListener** is an interface implemented by the **AddTagActivity**.
 It contains the onDeleteClick() method.
 
+**GradeReceieved** is an activity where the user can enter the grade they receieved on an assignemnt
+
+**totalGrade** is an activty where the user can input grade weight of an assignment.
+
 Test code is contained in **EditToDoActivityUnitTest**
 
 ## Documentation for Assignment 3
