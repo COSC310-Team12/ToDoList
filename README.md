@@ -45,6 +45,10 @@ is a custom ViewHolder.
 **TagClickListener** is an interface implemented by the **AddTagActivity**.
 It contains the onDeleteClick() method.
 
+**GradeReceieved** is an activity where the user can enter the grade they receieved on an assignemnt
+
+**totalGrade** is an activty where the user can input grade weight of an assignment.
+
 Test code is contained in **EditToDoActivityUnitTest**
 
 ## Documentation for Assignment 3
@@ -61,8 +65,9 @@ Since our system already had a GUI, we made improvements to the existing GUI. We
 - now displaying completed tasks using a RecyclerView (from AndroidX Library). This feature is a major improvement, because it allows users to reference previously completed tasks. Previously, tasks just became invisible to the user upon completion.
 <img src="https://user-images.githubusercontent.com/77898527/200717214-a077b894-7877-4953-9e43-907a2344fec9.png" alt="viewCompleted" width="100"/>
 
-#### Sorting tasks by their due date - Limitation fix 3
+#### Sorting tasks by their due date or grade weighting - Limitation fix 3
 - Users are able to sort their tasks by due date. They can sort them by due date ascending or descending.
+<img src="https://user-images.githubusercontent.com/77038122/201797367-33f34ba7-7131-4092-ae2e-49ae8238709c.png" alt="sorting menu" width="100"/>
 
 #### Automatically classify tasks as graded or ungrded - Limitation fix 4
 - Tasks are by default considered ungraded unil the user sets them as graded at which time the tag automatically changes to graded
@@ -92,13 +97,13 @@ Since our system already had a GUI, we made improvements to the existing GUI. We
 <img src="https://user-images.githubusercontent.com/77898527/200717248-8847e1d4-6115-4310-9fd0-512885bbe4ea.png" alt="contextMenu" width="100"/>
 
 #### App notifications - New feature 3
-- ️The user can now setup to receive notifications if a certain task is due soon or overdue. This implementation uses the open-source android library Notification & Notification Manager to create pop-up notifications & lock screen notifications. This provides meaningful warnings & information to our users allowing them to complete their objectives in a timely manner.  
-<img src ="https://user-images.githubusercontent.com/52676747/201796968-0e7b5aba-d0d1-4b54-9b3c-f06e339d5e62.PNG" alt="contextMenu" width="100"/> <img src ="https://user-images.githubusercontent.com/52676747/201797007-e4eab925-63fb-49d5-a782-2cecd68d86e5.PNG" alt="contextMenu" width="100"/><img src ="https://user-images.githubusercontent.com/52676747/201797599-498e03e7-769c-4042-aac1-17d082e48bd0.PNG" alt="contextMenu" width="100"/>
+- ️The user can now setup to receive notifications if a certain task is due soon or overdue. This implementation uses the open-source android library Notification & Notification Manager to create pop-up notifications & lock screen notifications. This provides meaningful warnings & information to our users allowing them to complete their objectives in a timely manner.
 
 #### Added navigation features to the main list - New feature 4
 - The list now automatically scrolls to the bottom to show newly added tasks. This makes the app easier to use because users can see and edit their tasks immediately after adding them instead of having to scroll down.
 - The newly added task briefly flashes a gray color so that it is cear to the user where their new task was added. This uses a TransitionDrawable object as the background of the task in order to animate it.
 - Users can use the gray button on the right to quickly navigate between the top and bottom of the list. This feature improves the efficiency of use for our app. Users can now easily navigate to their recent tasks at the bottom and back up to the search bar and the filter menu. This uses a floating button from the google android material library in order to keep the button in the same spot on the screen regardless of how far the user has scrolled.
+<img src="https://user-images.githubusercontent.com/77038122/201798552-ebeaf824-acf6-4fa1-9600-a84d1960c1c8.png" alt="viewCompleted" width="100"/>
 
 ## Compiling our code
 There are two ways to compile our code:
