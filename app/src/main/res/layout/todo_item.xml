@@ -4,35 +4,42 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="10"
+        android:gravity="start|top"
+        android:paddingStart="10dp"
+        android:paddingTop="3dp"
+        android:paddingEnd="10dp"
+        android:text="@string/checkbox"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <CheckBox
-            android:id="@+id/checkBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="10"
-            android:gravity="start|top"
-            android:paddingStart="10dp"
-            android:paddingTop="3dp"
-            android:paddingEnd="10dp"
-            android:text="@string/checkbox"
-            android:textSize="18sp" />
+    <ImageView
+        android:id="@+id/dots"
+        android:layout_width="10dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginEnd="24dp"
+        android:layout_weight="1"
+        android:contentDescription="@string/button_to_edit_to_do"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/dots" />
 
-        <ImageView
-            android:id="@+id/dots"
-            android:layout_width="10dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center_horizontal|top"
-            android:layout_marginTop="4dp"
-            android:layout_weight="1"
-            android:contentDescription="@string/button_to_edit_to_do"
-            app:srcCompat="@drawable/dots" />
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/dateView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="62dp"
+        android:text="@string/due_date_none"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

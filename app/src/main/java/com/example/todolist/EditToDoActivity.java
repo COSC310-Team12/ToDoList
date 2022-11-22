@@ -1,18 +1,31 @@
 package com.example.todolist;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -21,8 +34,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Date;
+import java.util.Objects;
 
 /*
 This class controls the edit to-do page. Users can navigate to this page by clicking on a to-do
@@ -32,7 +45,7 @@ Error checking is performed for both of those operations. Once the user is done,
 they can return to the main page.
 */
 
-public class EditToDo extends AppCompatActivity {
+public class EditToDoActivity extends AppCompatActivity {
     TextInputEditText name, date;
     TextInputLayout dueDateBox, nameBox;
     ToDo toDo;
@@ -40,6 +53,9 @@ public class EditToDo extends AppCompatActivity {
     Date newDate;
     CoordinatorLayout coordinatorLayout;
     boolean validDate = true;
+    int RequestPermission = 1;
+    boolean notificationOn = false;
+    String taskName;
 
     @SuppressLint({"SetTextI18n", "SimpleDateFormat"})
     @Override
@@ -58,12 +74,9 @@ public class EditToDo extends AppCompatActivity {
         toDo = toDoList.get(index);
 
         String activityTitle = toDo.getText();
-        if (activityTitle.length() > 25) {
-            activityTitle = activityTitle.substring(0, 25);
-            activityTitle += "...";
-        }
+        activityTitle = abbreviateIfTooLong(activityTitle);
 
-        ((TextView) findViewById(R.id.editTaskTextView)).setText("Edit \"" + activityTitle + "\"");
+        ((TextView) findViewById(R.id.addTagsTitle)).setText("Edit \"" + activityTitle + "\"");
 
         name = findViewById(R.id.editTaskName);
         date = findViewById(R.id.editTaskDueDate);
@@ -71,13 +84,17 @@ public class EditToDo extends AppCompatActivity {
         nameBox = findViewById(R.id.titleBox);
         coordinatorLayout = findViewById(R.id.myCoordinatorLayout);
 
+
         Button cancelEditButton = findViewById(R.id.cancelEditButton);
         Button deleteButton = findViewById(R.id.deleteButton);
-        Button submitEditButton = findViewById(R.id.submitEditButton);
+        Button submitEditButton = findViewById(R.id.doneButton);
 
+        CheckBox notify = findViewById(R.id.Notify);
         cancelEditButton.setOnClickListener(this::goBack);
         deleteButton.setOnClickListener(this::deleteToDo);
         submitEditButton.setOnClickListener(this::submit);
+        taskName = activityTitle;
+
 
         name.setText(toDo.getText());
         if (toDo.getDate() != null) {
@@ -89,7 +106,6 @@ public class EditToDo extends AppCompatActivity {
         name.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -100,7 +116,6 @@ public class EditToDo extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
             }
         });
 
@@ -108,7 +123,6 @@ public class EditToDo extends AppCompatActivity {
         date.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-
             }
 
             @Override
@@ -119,7 +133,6 @@ public class EditToDo extends AppCompatActivity {
                         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
                         sdf.setLenient(false);
                         newDate = sdf.parse(charSequence.toString());
-
                         // it is a valid date
                         validDate = true;
                         // make sure text field is regularly colored
@@ -127,10 +140,8 @@ public class EditToDo extends AppCompatActivity {
                     } catch (ParseException e) {
                         // invalid date
                         validDate = false;
-
                         // clear the Date stored if the user entered a valid date, then changed it to be invalid
                         newDate = null;
-
                         // only give the user the red box of judgement if they have entered a whole date
                         dueDateError(charSequence.toString().split("/").length > 2);
                     }
@@ -142,7 +153,6 @@ public class EditToDo extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
             }
         });
 
@@ -152,12 +162,34 @@ public class EditToDo extends AppCompatActivity {
                 submit(textView);
             return true;
         });
+
+        notify.setOnClickListener(v -> {
+            if(notify.isChecked()){
+                if (ContextCompat.checkSelfPermission(EditToDo.this,
+                        Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                    notificationOn = true;
+                }
+                else{
+                    requestPermissions();
+                }
+            }
+            else{
+                notificationOn = false;
+            }
+        });
+    }
+
+    public static String abbreviateIfTooLong(String activityTitle) {
+        if (activityTitle.length() > 25) {
+            activityTitle = activityTitle.substring(0, 25);
+            activityTitle += "...";
+        }
+        return activityTitle;
     }
 
     // called by submit button
     public void submit(View view) {
         // set new name and date, if the user entered them
-
         String newName = Objects.requireNonNull(name.getText()).toString();
         if (!newName.equals(""))
             toDo.setText(newName);
@@ -166,7 +198,6 @@ public class EditToDo extends AppCompatActivity {
             makeNotification("Please enter a task name");
             return;
         }
-
         if (validDate) {
             toDo.setDate(newDate);
         } else {
@@ -174,15 +205,17 @@ public class EditToDo extends AppCompatActivity {
             makeNotification("Please enter a valid date");
             return;
         }
+        if(notificationOn){
+            notificationCaller(getNotification("Late Task", String.format("%s is late", taskName)), 6000);
+        }
 
         goBack(view);
     }
 
     public void goBack(View view) {
         // return to main activity
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("ToDoList", toDoList);
-        startActivity(intent);
+        setResult(RESULT_OK, new Intent().putExtra("ToDoList", toDoList));
+        finish();
     }
 
     public void deleteToDo(View view) {
@@ -192,18 +225,16 @@ public class EditToDo extends AppCompatActivity {
         alert.setPositiveButton("Yes",
                 (dialog, which) -> {
                     toDoList.remove(toDo);
-
                     dialog.dismiss();
-
                     Intent intent = new Intent(view.getContext(), MainActivity.class);
                     // notify main activity to show message
                     intent.putExtra("Notification", 0);
                     intent.putExtra("ToDoList", toDoList);
                     intent.putExtra("deletedToDo", toDo);
-                    startActivity(intent);
+                    setResult(RESULT_OK, intent);
+                    finish();
                 });
         alert.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
-
         alert.show();
     }
 
@@ -233,6 +264,67 @@ public class EditToDo extends AppCompatActivity {
             dueDateBox.setBoxStrokeColor(getResources().getColor(R.color.purple_500));
             dueDateBox.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_500)));
             dueDateBox.setHelperText(" ");
+        }
+    }
+
+//Creates the pending intent & will send the notification to the sender class, which will then send the message
+    private void notificationCaller(Notification notification, int delay) {
+        Intent notifyInt = new Intent(this, NotificationSender.class);
+
+        notifyInt.putExtra(NotificationSender.NotificationID, 1);
+        notifyInt.putExtra(NotificationSender.NOTIFICATION, notification);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notifyInt, PendingIntent.FLAG_IMMUTABLE);
+
+        long AlarmTimer = SystemClock.elapsedRealtime()+delay;
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        assert alarmManager != null;
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, AlarmTimer, pendingIntent);
+
+    }
+    //generic notification builder method
+    private Notification getNotification(String title, String content) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "NotifyLate")
+                    .setSmallIcon(R.drawable.notificationbell)
+                    .setContentTitle(title)
+                    .setContentText(content)
+                    .setAutoCancel(true);
+
+            return builder.build();
+
+
+    }
+
+    //method for creating dialogue box & asking for permissions
+    private void requestPermissions() {
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS)){
+            new AlertDialog.Builder(this)
+                    .setTitle("Notification Permission")
+                    .setMessage("Todo would like to send you notifications when a task is due soon or past-due")
+                    .setPositiveButton("Agree", (dialog, which) -> ActivityCompat.requestPermissions(EditToDo.this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, RequestPermission))
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .create().show();
+
+
+        }else{
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, RequestPermission);
+        }
+    }
+
+    //Checks to see if the permission is granted or denied
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == RequestPermission) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+
+            }else{
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 }

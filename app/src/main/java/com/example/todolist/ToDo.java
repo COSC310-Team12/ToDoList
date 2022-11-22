@@ -1,16 +1,26 @@
 package com.example.todolist;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.UUID;
 
 /*
 This is a serializable class to store information about to-dos.
 */
 
 public class ToDo implements Serializable {
+    private final UUID uuid = UUID.randomUUID(); // Implementation recommended by https://www.baeldung.com/java-uuid
     private String text;
     private boolean done;
     private Date date;
+    private float maxGrade;
+    private float gradeReceived;
+    private final ArrayList<String> tags = new ArrayList<>();
+
 
     public ToDo(String text) {
         this.text = text;
@@ -47,5 +57,73 @@ public class ToDo implements Serializable {
     public void setDate(Date date) {
         this.date = date;
     }
+
+    public float getMaxGrade() { return maxGrade; }
+
+    public void setMaxGrade(float maxGrade) { this.maxGrade = maxGrade; }
+
+    public float getGradeReceived() { return gradeReceived; }
+
+    public void setGradeReceived(float gradeReceived) { this.gradeReceived = gradeReceived; }
+
+    public boolean addTag(String tag) {
+        if (!tag.equals("")) {
+            tags.add(tag);
+        }
+        else
+            return false;
+        return true;
+    }
+
+    public boolean removeTag(String tag) {
+        return tags.remove(tag);
+    }
+
+    public ArrayList<String> getTags() {
+        return tags;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "ToDo{" +
+                "text='" + text + '\'' +
+                ", done=" + done +
+                ", date=" + date +
+                ", tags=" + tags +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return getClass() == o.getClass() && uuid.equals(((ToDo) o).uuid);
+    }
+    public static Comparator<ToDo> DueDateAscComparator= (t1, t2) -> {
+        if(t1.getDate()==null)
+            return 1;
+        else if(t2.getDate()==null)
+            return -1;
+        else return t1.getDate().compareTo(t2.getDate());
+    };
+    public static Comparator<ToDo> DueDateDescComparator= (t1, t2) -> {
+        if(t1.getDate()==null)
+            return 1;
+        else if(t2.getDate()==null)
+            return -1;
+        else return t2.getDate().compareTo(t1.getDate());
+    };
+    public static Comparator<ToDo> TotalMarksComparator= (t1, t2) -> {
+        if (t2.getMaxGrade() - t1.getMaxGrade() > 0)
+            return 1;
+        else if ((t2.getMaxGrade() - t1.getMaxGrade() < 0))
+            return -1;
+        else { // if the total Grades are the same, then sort Ascendingly
+            if(t1.getDate()==null)
+                return 1;
+            else if(t2.getDate()==null)
+                return -1;
+            else return t1.getDate().compareTo(t2.getDate());
+        }
+    };
 }
 
