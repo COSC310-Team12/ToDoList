@@ -25,6 +25,14 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    packagingOptions {
+        exclude 'project.properties'
+        resources.excludes.add("META-INF/*")
+        resources.excludes.add("android.support.v4.app.INotificationSideChannel")
+        resources.excludes.add("IResultReceiver")
+        resources.excludes.add("ResultReceiver")
+    }
+
 }
 
 dependencies {
@@ -42,4 +50,8 @@ dependencies {
     implementation "com.github.skydoves:powermenu:2.2.1"
     androidTestImplementation 'androidx.test:runner:1.5.1'
     androidTestImplementation 'androidx.test:rules:1.5.0'
+    implementation 'com.paypal.sdk:paypal-android-sdk:2.14.2'
+    implementation 'com.google.cloud:google-cloud-translate:1.12.0'
+    implementation 'com.google.guava:guava:27.0.1-android'
+
 }

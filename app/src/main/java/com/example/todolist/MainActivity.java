@@ -4,14 +4,18 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -30,6 +34,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.translate.Translate;
+import com.google.cloud.translate.TranslateOptions;
+import com.google.cloud.translate.Translation;
 import com.skydoves.powermenu.CustomPowerMenu;
 import com.skydoves.powermenu.MenuAnimation;
 import com.skydoves.powermenu.PowerMenu;
@@ -40,12 +48,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 
@@ -61,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private boolean showCompleted = false, showIncomplete = true;
     private ImageView dropdownIcon, dropdownIcon2;
     private EditText inputToDo;
+    private static ArrayList<String[]> lang;
+    private String language;
 
     private SearchView searchView;
     private List<FilterPowerMenuItem> filterItems;
@@ -73,6 +85,10 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
     private final boolean[] toTop = new boolean[2];
     private int toTopControl = 0; // 0: controlling incomplete list; 1: controlling completed list
     private int sortingType=0; // this is used to control the sort of the tasks.
+
+    private boolean connected;
+    String transText;
+    Translate translate;
 
 
 
@@ -90,10 +106,10 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
-
+        //ToDoList://paypalpay
         toDoRecyclerView = findViewById(R.id.toDoRecyclerView);
         completedRecyclerView = findViewById(R.id.completedRecyclerView);
-
+        languageOptions();
         inputToDo = findViewById(R.id.inputToDo);
         dropdownIcon = findViewById(R.id.dropdownIcon);
         dropdownIcon2 = findViewById(R.id.dropdownIcon2);
@@ -376,6 +392,8 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
         itemList.add(new PowerMenuItem("Edit Tags", false));
         itemList.add(new PowerMenuItem("Delete", false));
         itemList.add(new PowerMenuItem("Set task as 'Graded'",false));
+        itemList.add(new PowerMenuItem("Donate?", false));
+        itemList.add(new PowerMenuItem("Translate Task", false));
         if(clickedToDo.getTags().contains("Graded")){
             itemList.add(new PowerMenuItem("Enter Grade Received",false));
         }
@@ -444,6 +462,27 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 i.putExtra("ToDoList", toDoList);
                 i.putExtra("Index", toDoList.indexOf(clickedToDo));
                 startActivityForResult(i,EDIT_TODO_ACTIVITY_REQUEST);
+            } else if(item.getTitle().equals("Donate?")){
+                Intent i = new Intent(this, payPalPayment.class);
+                startActivity(i);
+            }
+            else if(item.getTitle().equals("Translate Task")){
+                if (checkInternetConnection()){
+                    getTranslateService();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Select a language");
+                    String[] languages = getLanguages();
+                    builder.setItems(languages, (dialog, which) -> {
+                        dialog.dismiss();
+                        language = languages[which];
+                        clickedToDo.setText(translate(clickedToDo.getText()));
+                        save();
+                        loadData();
+                    });
+                    builder.show();
+                }else{
+                    makeNotification("No connection, cannot translate!");
+                }
             }
         });
         powerMenu.showAsAnchorRightBottom(view); // view is where the menu is anchored
@@ -643,4 +682,196 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                 gotoTopBottomSwap();
         }
     }
+    public void getTranslateService(){
+        //This gets credentials & verifies it
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        try (InputStream is = getResources().openRawResource(R.raw.credentials)){
+
+            final GoogleCredentials myCred = GoogleCredentials.fromStream(is);
+
+            TranslateOptions translateOptions = TranslateOptions.newBuilder().setCredentials(myCred).build();
+            translate = (Translate) translateOptions.getService();
+        }catch (IOException ioe){
+            ioe.printStackTrace();
+        }
+    }
+
+    public String translate(String item){
+        //Translates the title into the desired language
+        language = langCode(language);
+        Translation translation = translate.translate(item, Translate.TranslateOption.targetLanguage(language), Translate.TranslateOption.model("base"));
+        transText = translation.getTranslatedText();
+        return transText;
+
+    }
+
+    public boolean checkInternetConnection(){
+        //Checks if you can connect to the internet
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        connected = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
+
+        return connected;
+    }
+    public void languageOptions (){
+        lang = new ArrayList<>();
+        lang.add( new String[]{"Afrikaans","af"});
+        lang.add( new String[]{"Albanian","sq"});
+        lang.add( new String[]{"Amharic","am"});
+        lang.add( new String[]{"Arabic","ar"});
+        lang.add( new String[]{"Armenian","hy"});
+        lang.add( new String[]{"Assamese","as"});
+        lang.add( new String[]{"Aymara","ay"});
+        lang.add( new String[]{"Azerbaijani","az"});
+        lang.add( new String[]{"Bambara","bm"});
+        lang.add( new String[]{"Basque","eu"});
+        lang.add( new String[]{"Belarusian","be"});
+        lang.add( new String[]{"Bengali","bn"});
+        lang.add( new String[]{"Bhojpuri","bho"});
+        lang.add( new String[]{"Bosnian","bs"});
+        lang.add( new String[]{"Bulgarian","bg"});
+        lang.add( new String[]{"Catalan","ca"});
+        lang.add( new String[]{"Cebuano","ceb"});
+        lang.add( new String[]{"Chinese Simplified","zh-CN"});
+        lang.add( new String[]{"Chinese Traditional","zh-TW"});
+        lang.add( new String[]{"Corsican","co"});
+        lang.add( new String[]{"Croatian","hr"});
+        lang.add( new String[]{"Czech","cs"});
+        lang.add( new String[]{"Danish","da"});
+        lang.add( new String[]{"Dhivehi","dv"});
+        lang.add( new String[]{"Dogri","doi"});
+        lang.add( new String[]{"Dutch","nl"});
+        lang.add( new String[]{"English","en"});
+        lang.add( new String[]{"Esperanto","eo"});
+        lang.add( new String[]{"Estonian","et"});
+        lang.add( new String[]{"Ewe","ee"});
+        lang.add( new String[]{"Filipino","fil"});
+        lang.add( new String[]{"Finnish","fi"});
+        lang.add( new String[]{"French","fr"});
+        lang.add( new String[]{"Frisian","fy"});
+        lang.add( new String[]{"Galician","gl"});
+        lang.add( new String[]{"Georgian","ka"});
+        lang.add( new String[]{"German","de"});
+        lang.add( new String[]{"Greek","el"});
+        lang.add( new String[]{"Guarani","gn"});
+        lang.add( new String[]{"Gujarati","gu"});
+        lang.add( new String[]{"Haitian","ht"});
+        lang.add( new String[]{"Hausa","ha"});
+        lang.add( new String[]{"Hawaiian","haw"});
+        lang.add( new String[]{"Hebrew","he"});
+        lang.add( new String[]{"Hindi","hi"});
+        lang.add( new String[]{"Hmong","hmn"});
+        lang.add( new String[]{"Hungarian","hu"});
+        lang.add( new String[]{"Icelandic","is"});
+        lang.add( new String[]{"Igbo","ig"});
+        lang.add( new String[]{"Ilocano","ilo"});
+        lang.add( new String[]{"Indonesian","id"});
+        lang.add( new String[]{"Irish","ga"});
+        lang.add( new String[]{"Italian","it"});
+        lang.add( new String[]{"Japanese","ja"});
+        lang.add( new String[]{"Javanese","jw"});
+        lang.add( new String[]{"Kannada","kn"});
+        lang.add( new String[]{"Kazakh","kk"});
+        lang.add( new String[]{"Khmer","km"});
+        lang.add( new String[]{"Kinyarwanda","rw"});
+        lang.add( new String[]{"Konkani","gom"});
+        lang.add( new String[]{"Korean","ko"});
+        lang.add( new String[]{"Krio","kri"});
+        lang.add( new String[]{"Kurdish","ku"});
+        lang.add( new String[]{"Kurdish","ckb"});
+        lang.add( new String[]{"Kyrgyz","ky"});
+        lang.add( new String[]{"Lao","lo"});
+        lang.add( new String[]{"Latin","la"});
+        lang.add( new String[]{"Latvian","lv"});
+        lang.add( new String[]{"Lingala","ln"});
+        lang.add( new String[]{"Lithuanian","lt"});
+        lang.add( new String[]{"Luganda","lg"});
+        lang.add( new String[]{"Luxembourgish","lb"});
+        lang.add( new String[]{"Macedonian","mk"});
+        lang.add( new String[]{"Maithili","mai"});
+        lang.add( new String[]{"Malagasy","mg"});
+        lang.add( new String[]{"Malay","ms"});
+        lang.add( new String[]{"Malayalam","ml"});
+        lang.add( new String[]{"Maltese","mt"});
+        lang.add( new String[]{"Maori","mi"});
+        lang.add( new String[]{"Marathi","mr"});
+        lang.add( new String[]{"Meiteilon Manipuri","mni-Mtei"});
+        lang.add( new String[]{"Mizo","lus"});
+        lang.add( new String[]{"Mongolian","mn"});
+        lang.add( new String[]{"Myanmar","my"});
+        lang.add( new String[]{"Nepali","ne"});
+        lang.add( new String[]{"Norwegian","no"});
+        lang.add( new String[]{"Nyanja","ny"});
+        lang.add( new String[]{"Odia","or"});
+        lang.add( new String[]{"Oromo","om"});
+        lang.add( new String[]{"Pashto","ps"});
+        lang.add( new String[]{"Persian","fa"});
+        lang.add( new String[]{"Polish","pl"});
+        lang.add( new String[]{"Portuguese","pt"});
+        lang.add( new String[]{"Punjabi","pa"});
+        lang.add( new String[]{"Quechua","qu"});
+        lang.add( new String[]{"Romanian","ro"});
+        lang.add( new String[]{"Russian","ru"});
+        lang.add( new String[]{"Samoan","sm"});
+        lang.add( new String[]{"Sanskrit","sa"});
+        lang.add( new String[]{"Scots","gd"});
+        lang.add( new String[]{"Sepedi","nso"});
+        lang.add( new String[]{"Serbian","sr"});
+        lang.add( new String[]{"Sesotho","st"});
+        lang.add( new String[]{"Shona","sn"});
+        lang.add( new String[]{"Sindhi","sd"});
+        lang.add( new String[]{"Sinhala","si"});
+        lang.add( new String[]{"Slovak","sk"});
+        lang.add( new String[]{"Slovenian","sl"});
+        lang.add( new String[]{"Somali","so"});
+        lang.add( new String[]{"Spanish","es"});
+        lang.add( new String[]{"Sundanese","su"});
+        lang.add( new String[]{"Swahili","sw"});
+        lang.add( new String[]{"Swedish","sv"});
+        lang.add( new String[]{"Tagalog","tl"});
+        lang.add( new String[]{"Tajik","tg"});
+        lang.add( new String[]{"Tamil","ta"});
+        lang.add( new String[]{"Tatar","tt"});
+        lang.add( new String[]{"Telugu","te"});
+        lang.add( new String[]{"Thai","th"});
+        lang.add( new String[]{"Tigrinya","ti"});
+        lang.add( new String[]{"Tsonga","ts"});
+        lang.add( new String[]{"Turkish","tr"});
+        lang.add( new String[]{"Turkmen","tk"});
+        lang.add( new String[]{"Twi","(Akan)","ak"});
+        lang.add( new String[]{"Ukrainian","uk"});
+        lang.add( new String[]{"Urdu","ur"});
+        lang.add( new String[]{"Uyghur","ug"});
+        lang.add( new String[]{"Uzbek","uz"});
+        lang.add( new String[]{"Vietnamese","vi"});
+        lang.add( new String[]{"Welsh","cy"});
+        lang.add( new String[]{"Xhosa","xh"});
+        lang.add( new String[]{"Yiddish","yi"});
+        lang.add( new String[]{"Yoruba","yo"});
+        lang.add( new String[]{"Zulu","zu"});
+    }
+
+    private String langCode(String language) {
+        //This takes the language name & grabs the language code to use in translate call
+        language = language.toLowerCase(Locale.ROOT);
+        for (String[] languageCode : lang) {
+            if (languageCode[0].equalsIgnoreCase(language) || languageCode[1].equalsIgnoreCase(language))
+                return languageCode[1];
+
+        }
+        return "en";
+    }
+
+    private String[] getLanguages() {
+        //This gets all the languages into a list for the Alert Builder
+        languageOptions();
+        String[] langStr = new String[lang.size()];
+        //copying the main arrayList into a string list
+        for (int i = 0; i < lang.size(); i++)
+            langStr[i] = lang.get(i)[0];
+        return langStr;
+    }
 }
+
