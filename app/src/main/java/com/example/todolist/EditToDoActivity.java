@@ -88,11 +88,13 @@ public class EditToDoActivity extends AppCompatActivity {
         Button cancelEditButton = findViewById(R.id.cancelEditButton);
         Button deleteButton = findViewById(R.id.deleteButton);
         Button submitEditButton = findViewById(R.id.doneButton);
+        Button donoButton = findViewById(R.id.donateButton);
 
         CheckBox notify = findViewById(R.id.Notify);
         cancelEditButton.setOnClickListener(this::goBack);
         deleteButton.setOnClickListener(this::deleteToDo);
         submitEditButton.setOnClickListener(this::submit);
+        donoButton.setOnClickListener(this::donation);
         taskName = activityTitle;
 
 
@@ -165,7 +167,7 @@ public class EditToDoActivity extends AppCompatActivity {
 
         notify.setOnClickListener(v -> {
             if(notify.isChecked()){
-                if (ContextCompat.checkSelfPermission(EditToDo.this,
+                if (ContextCompat.checkSelfPermission(EditToDoActivity.this,
                         Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                     notificationOn = true;
                 }
@@ -303,7 +305,7 @@ public class EditToDoActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setTitle("Notification Permission")
                     .setMessage("Todo would like to send you notifications when a task is due soon or past-due")
-                    .setPositiveButton("Agree", (dialog, which) -> ActivityCompat.requestPermissions(EditToDo.this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, RequestPermission))
+                    .setPositiveButton("Agree", (dialog, which) -> ActivityCompat.requestPermissions(EditToDoActivity.this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, RequestPermission))
                     .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                     .create().show();
 
@@ -327,4 +329,10 @@ public class EditToDoActivity extends AppCompatActivity {
 
         }
     }
+
+    public void donation(View view){
+        Intent donate = new Intent(EditToDoActivity.this, payPalPayment.class);
+        startActivity(donate);
+    }
+
 }
