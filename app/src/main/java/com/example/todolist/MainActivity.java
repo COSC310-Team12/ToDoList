@@ -481,7 +481,7 @@ public class MainActivity extends AppCompatActivity implements ToDoClickListener
                     });
                     builder.show();
                 }else{
-                    //makeNotification("No connection, cannot translate!");
+                    makeNotification("No connection, cannot translate!");
                 }
             }
         });
